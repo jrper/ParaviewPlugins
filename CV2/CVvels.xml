@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="CVFaceVels" class="function" label="Velocities on CV Faces">
+      <Documentation long_help="Plot pointwise velocity on midpoints of Control Volume faces" short_help="Plot CV Vels">
+      </Documentation>
+      <InputProperty
+	  name="Input"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
