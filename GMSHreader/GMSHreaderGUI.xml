@@ -1,0 +1,7 @@
+<ParaViewReaders>
+   <Reader
+       name=”GMSHreader”
+       extensions=”msh”
+       file_description=”GMSH mesh file”>
+   </Reader>
+</ParaViewReaders>

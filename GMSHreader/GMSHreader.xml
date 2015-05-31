@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+    <SourceProxy name="GMSHreader" class="GMSHreader" label="GMSHreader">
+      <Documentation long_help="Read a GMSH .msh file." short_help="Read and display a GMSH .msh file, with tag information.">
+      </Documentation>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+
+      <Hints>
+	<ReaderFactory extensions="msh"
+		       file_description="GMSH mesh file format" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
