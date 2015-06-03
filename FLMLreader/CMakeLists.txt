@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 2.8.8)
+
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+  cmake_policy(SET CMP0023 OLD)
+  cmake_policy(SET CMP0042 OLD)
+endif(COMMAND cmake_policy)
+
+
+FIND_PACKAGE(ParaView REQUIRED)
+INCLUDE(${PARAVIEW_USE_FILE})
+
+
+
+ADD_PARAVIEW_PLUGIN(
+  FLMLreader "0.0"
+  SERVER_MANAGER_XML FLMLreader.xml
+  SERVER_MANAGER_SOURCES FLMLreader.h FLMLreader.cxx
+  GUI_RESOURCE_FILES FLMLreaderGUI.xml
+  )
+
+
+FIND_LIBRARY(SPUD_LIBRARY spud)
+INCLUDE_DIRECTORIES( ../GMSHreader)
+FIND_LIBRARY(GMSH_READER GMSHreader ../GMSHreader)
+TARGET_LINK_LIBRARIES(FLMLreader ${SPUD_LIBRARY} ${GMSH_READER})

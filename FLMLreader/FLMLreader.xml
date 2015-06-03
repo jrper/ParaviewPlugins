@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+    <SourceProxy name="FLMLreader" class="FLMLreader" label="fLMLreader">
+      <Documentation long_help="Read an FLML file setup." short_help="Read and display a .flml file.">
+      </Documentation>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+
+      <Hints>
+	<ReaderFactory extensions="flml mpml"
+		       file_description="Fluidity Markup Language" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
