@@ -7,6 +7,7 @@
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
 #include "vtkCellArray.h"
+#include <vtkIntArray.h>
 #include "vtkPoints.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkSmartPointer.h"
@@ -30,7 +31,7 @@ vtkStandardNewMacro(GMSHreader);
 GMSHreader::GMSHreader(){
   this->FileName=NULL;
   this->SetNumberOfInputPorts(0);
-  this->SetNumberOfOutputPorts(1);
+  this->SetNumberOfOutputPorts(2);
 };
 GMSHreader::~GMSHreader(){
  this->SetFileName(0);
@@ -43,6 +44,8 @@ int GMSHreader::RequestData(
 {
   vtkInformation* outInfo=outputVector->GetInformationObject(0);
   vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
+vtkInformation* outInfo2=outputVector->GetInformationObject(0);
+  vtkUnstructuredGrid* output2= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
 
   // try to open the GMSH file
 
@@ -81,11 +84,24 @@ for(GMSHfile >> line;line.compare("$Elements");GMSHfile >> line){
   GMSHfile >> n;
   output->Allocate(n);
   int eleNo, CellType, tagNo;
+
+  vtkSmartPointer<vtkIntArray> ElementaryEntities= vtkSmartPointer<vtkIntArray>::New();
+  ElementaryEntities->SetName("ElementaryEntities");
+  ElementaryEntities->Allocate(n);
+  vtkSmartPointer<vtkIntArray> PhysicalIds= vtkSmartPointer<vtkIntArray>::New();
+  PhysicalIds->SetName("PhysicalIds");
+  PhysicalIds->Allocate(n);
   for (int i=0;i<n;i++){
     GMSHfile>> eleNo >> CellType >> tagNo;
     for (int j=0;j<tagNo;j++){
       int tag;
       GMSHfile >> tag;
+      if (j==0) {
+	ElementaryEntities->InsertNextValue(tag);
+      }
+      if (j==1) {
+	PhysicalIds->InsertNextValue(tag);
+      }      
     }
     vtkDebugMacro(<< CellType);
     switch (CellType)
@@ -138,6 +154,9 @@ break;
 }
 }
 }
+
+  output->GetCellData()->AddArray(ElementaryEntities);
+  output->GetCellData()->AddArray(PhysicalIds);
 
   // try to close the GMSH file
   GMSHfile.close();
