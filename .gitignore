@@ -1,0 +1,21 @@
+## files from text editors 
+*~
+## files produced from the output
+CMakeCache.txt
+*Init.cxx
+*_Plugin.*
+Makefile
+cmake_install.cmake
+*_xml_to_wiki.xsl
+vtkSMXML*.h
+*.xml.xml
+*_doc.h
+*Instantiator.*
+*ClientServer*
+CMakeFiles
+*.qcp
+*.qhp
+*.qch
+*.wiki
+*.args
+*.html
