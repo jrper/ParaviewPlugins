@@ -31,7 +31,7 @@ vtkStandardNewMacro(GMSHreader);
 GMSHreader::GMSHreader(){
   this->FileName=NULL;
   this->SetNumberOfInputPorts(0);
-  this->SetNumberOfOutputPorts(2);
+  this->SetNumberOfOutputPorts(1);
 };
 GMSHreader::~GMSHreader(){
  this->SetFileName(0);
@@ -44,8 +44,6 @@ int GMSHreader::RequestData(
 {
   vtkInformation* outInfo=outputVector->GetInformationObject(0);
   vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
-vtkInformation* outInfo2=outputVector->GetInformationObject(0);
-  vtkUnstructuredGrid* output2= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
 
   // try to open the GMSH file
 
