@@ -11,6 +11,7 @@ INCLUDE(${PARAVIEW_USE_FILE})
 add_subdirectory(ShowCVs)
 add_subdirectory(VelocitiesOnCVs)
 add_subdirectory(GMSHreader)
+add_subdirectory(SplitBcs)
 add_subdirectory(FLMLreader)
 
 file(MAKE_DIRECTORY plugins)

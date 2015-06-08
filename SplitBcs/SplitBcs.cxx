@@ -6,6 +6,7 @@
 #include "vtkCellType.h"
 #include "vtkCellTypes.h"
 #include "vtkCellData.h"
+#include "vtkPointData.h"
 #include "vtkIdTypeArray.h"
 #include "vtkCellArray.h"
 #include "vtkPoints.h"
@@ -66,18 +67,38 @@ outpoints1->DeepCopy(input->GetPoints());
 
  vtkIdType N=input->GetNumberOfCells();
  output0->Allocate(N);
+ output0->GetPointData()->DeepCopy(input->GetPointData());
  output1->Allocate(N);
+ output1->GetPointData()->DeepCopy(input->GetPointData());
+
+   
+ int NCDA=input->GetCellData()->GetNumberOfArrays();
+ output0->GetCellData()->CopyStructure(input->GetCellData());
+ output1->GetCellData()->CopyStructure(input->GetCellData());
+ for (vtkIdType i=0;i<NCDA;i++)
+   {
+     output0->GetCellData()->GetArray(i)->SetName(input->GetCellData()->GetArray(i)->GetName());
+     output1->GetCellData()->GetArray(i)->SetName(input->GetCellData()->GetArray(i)->GetName());
+   }
+     
+ 
  for (vtkIdType i=0;i<N;i++)
    {
      vtkCell* C=input->GetCell(i);
      if (dimension==input->GetCell(i)->GetCellDimension()) {
        output0->InsertNextCell(C->GetCellType(),
 			       C->GetPointIds());
+       for (vtkIdType j=0;j<NCDA;j++) {
+	 output0->GetCellData()->GetArray(j)->InsertNextTuple(input->GetCellData()->GetArray(j)->GetTuple(i)); }
      } else {
        output1->InsertNextCell(C->GetCellType(),
 			       C->GetPointIds());
+       for (vtkIdType j=0;j<NCDA;j++) {
+	 output1->GetCellData()->GetArray(j)->InsertNextTuple(input->GetCellData()->GetArray(j)->GetTuple(i)); }
+
      }
    }
+
   return 1;
 }
 

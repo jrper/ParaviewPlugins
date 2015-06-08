@@ -1,6 +1,7 @@
 #include "FLMLreader.h"
 
 #include "GMSHreader.h"
+#include "SplitBcs.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -35,7 +36,7 @@ vtkStandardNewMacro(FLMLreader);
 FLMLreader::FLMLreader(){
   this->FileName=NULL;
   this->SetNumberOfInputPorts(0);
-  this->SetNumberOfOutputPorts(1);
+  this->SetNumberOfOutputPorts(2);
 };
 FLMLreader::~FLMLreader(){
  this->SetFileName(0);
@@ -46,8 +47,11 @@ int FLMLreader::RequestData(
 		      vtkInformationVector **inputVector,
 		      vtkInformationVector* outputVector )
 {
-  vtkInformation* outInfo=outputVector->GetInformationObject(0);
-  vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
+vtkInformation* outInfo0=outputVector->GetInformationObject(0);
+vtkUnstructuredGrid* output0= vtkUnstructuredGrid::SafeDownCast(outInfo0->Get(vtkDataObject::DATA_OBJECT() ) );
+vtkInformation* outInfo1=outputVector->GetInformationObject(1);
+vtkUnstructuredGrid* output1= vtkUnstructuredGrid::SafeDownCast(outInfo1->Get(vtkDataObject::DATA_OBJECT() ) );
+ outInfo1->Set(vtkUnstructuredGrid::FIELD_NAME(),"Boundary");
 
 this->DebugOn();
 
@@ -84,9 +88,16 @@ vtkDebugMacro(<<"File name set");
 
 gr->Update();
 
+ vtkSmartPointer<SplitBcs> bcs = 
+   vtkSmartPointer<SplitBcs>::New();
+
+ bcs->SetInputConnection(gr->GetOutputPort());
+ bcs->Update();
+
 vtkDebugMacro(<<"Updated");
 
-output->DeepCopy(gr->GetOutput());
+output0->DeepCopy(bcs->GetOutput(0));
+output1->DeepCopy(bcs->GetOutput(1));
 
 vtkDebugMacro(<<"Linked to output");
 
@@ -100,3 +111,4 @@ void FLMLreader::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "File Name: "
       << (this->FileName ? this->FileName : "(none)") << "\n";
 }
+

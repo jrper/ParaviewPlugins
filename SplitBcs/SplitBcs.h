@@ -1,13 +1,11 @@
-#include "vtkDataObjectAlgorithm.h"
-
 #include "vtkUnstructuredGridAlgorithm.h"
-#include "vtkSetGet.h"
 
 class SplitBcs : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static SplitBcs* New();
+  static SplitBcs *New();
   vtkTypeRevisionMacro(SplitBcs,vtkUnstructuredGridAlgorithm);
+
  protected:
 
   SplitBcs();
@@ -22,5 +20,8 @@ public:
 			  vtkInformationVector** InputVector,
 			  vtkInformationVector* outputVector);
   virtual int FillInputPortInformation(int port,vtkInformation *info);
+
+
+
 
 };

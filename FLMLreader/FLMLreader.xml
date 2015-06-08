@@ -9,7 +9,8 @@
 			    number_of_elements="1">
 	<FileListDomain name="files"/>
       </StringVectorProperty>
-
+      <OutputPort name="Domain" port_index="0"/>
+      <OutputPort name="Boundary" port_index="1"/>
       <Hints>
 	<ReaderFactory extensions="flml mpml"
 		       file_description="Fluidity Markup Language" />
