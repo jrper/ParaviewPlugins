@@ -10,7 +10,9 @@
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
 #include "vtkCellArray.h"
+#include "vtkDoubleArray.h"
 #include "vtkPoints.h"
+#include "vtkPointData.h"
 #include "vtkUnstructuredGrid.h"
 #include "vtkSmartPointer.h"
 #include "vtkDataObject.h"
@@ -100,6 +102,42 @@ output0->DeepCopy(bcs->GetOutput(0));
 output1->DeepCopy(bcs->GetOutput(1));
 
 vtkDebugMacro(<<"Linked to output");
+
+lhs="/material_phase[";
+rhs="]/";
+for (int i=0;i<Spud::option_count("/material_phase");i++){
+  std::stringstream a;
+  a<<i;
+  std::string key=lhs+a.str()+rhs;
+  std::string state_name;
+  Spud::get_option(key+"name",state_name);
+  for (int j=0;j<Spud::option_count(key+"scalar_field");j++){
+    vtkSmartPointer<vtkDoubleArray> scalar_field= vtkSmartPointer<vtkDoubleArray>::New();
+    std::stringstream b;
+    b<<j;
+    std::string key2=key+"scalar_field["+b.str()+rhs;
+    std::string field_name;
+    Spud::get_option(key2+"name",field_name);
+    vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
+    scalar_field->SetName(field_name.c_str());
+    scalar_field->Allocate(output0->GetNumberOfPoints());
+    output0->GetPointData()->AddArray(scalar_field);
+  }
+  for (int j=0;j<Spud::option_count(key+"vector_field");j++){
+    vtkSmartPointer<vtkDoubleArray> vector_field= vtkSmartPointer<vtkDoubleArray>::New();
+    std::stringstream b;
+    b<<j;
+    std::string key2=key+"vector_field["+b.str()+rhs;
+    std::string field_name;
+    Spud::get_option(key2+"name",field_name);
+    vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
+    vector_field->SetName(field_name.c_str());
+    vector_field->SetNumberOfComponents(3);
+    vector_field->Allocate(output0->GetNumberOfPoints());
+    output0->GetPointData()->AddArray(vector_field);
+  }
+ }
+
 
   return 1;
 }
