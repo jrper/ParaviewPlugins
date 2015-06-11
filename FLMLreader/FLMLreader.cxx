@@ -126,34 +126,40 @@ for (int i=0;i<Spud::option_count("/material_phase");i++){
     Spud::get_option(key2+"name",field_name);
     vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
 
-    std::map<int,int> id2bc;
+    std::map<int,double> id2bc;
     for (int k=0;k<Spud::option_count(key2+"prognostic/boundary_conditions");k++){
       std::stringstream c;
       c<<k;
       std::string key3=key2+"prognostic/boundary_conditions["+c.str()+"]/surface_ids";
       std::vector<int> surface_ids;
       Spud::get_option(key3,surface_ids);
+      std::string key4=key2+"prognostic/boundary_conditions["+c.str()+"]/type::dirichlet/constant";
+      double val;
+      Spud::get_option(key4,val);
       for (std::vector<int>::iterator it = surface_ids.begin(); it!=surface_ids.end(); ++it){
-	id2bc.insert(std::pair<int,int>(*it,k));
-vtkDebugMacro(<<"BC pair: "<< *it <<" "<< k);
+	id2bc.insert(std::pair<int,double>(*it,val));
       }
     }
 
     scalar_field->SetName((state_name+"::"+field_name).c_str());
     scalar_field->Allocate(output0->GetNumberOfPoints());
     output0->GetPointData()->AddArray(scalar_field);
+
+    for (int n=0;n<output0->GetNumberOfPoints();n++){
+      scalar_field->SetValue(n,vtkMath::Nan());
+    }
+
     scalar_field= vtkSmartPointer<vtkDoubleArray>::New();
     scalar_field->SetName((state_name+"::"+field_name).c_str());
     scalar_field->Allocate(output1->GetNumberOfPoints());
     output1->GetPointData()->AddArray(scalar_field);
     for (int k=0;k<output1->GetNumberOfCells();k++){
       int id=boundaryIds->GetValue(k);
-      std::map<int,int>::iterator it;
+      std::map<int,double>::iterator it;
       it = id2bc.find(id);
-vtkDebugMacro(<<"BC val: "<< id <<" "<< k<<" "<<it->first);
       if (it != id2bc.end()) {
 	for (int n=0;n<output1->GetCell(k)->GetNumberOfPoints();n++){
-scalar_field->SetValue(output1->GetCell(k)->GetPointId(n),0.0);
+scalar_field->SetValue(output1->GetCell(k)->GetPointId(n),it->second);
 	}
       } else {
 	for (int n=0;n<output1->GetCell(k)->GetNumberOfPoints();n++){
@@ -169,11 +175,15 @@ scalar_field->SetValue(output1->GetCell(k)->GetPointId(n),0.0);
     std::string key2=key+"vector_field["+b.str()+rhs;
     std::string field_name;
     Spud::get_option(key2+"name",field_name);
-    vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
     vector_field->SetName((state_name+"::"+field_name).c_str());
     vector_field->SetNumberOfComponents(3);
     vector_field->Allocate(output0->GetNumberOfPoints());
     output0->GetPointData()->AddArray(vector_field);
+    std::vector<double> val;
+    Spud::get_option(key2+"prognostic/initial_condition/constant",val);
+    for (int n=0;n<output0->GetNumberOfPoints();n++){
+      vector_field->SetTuple3(n,val[0],val[1],val[2]);
+    }
   }
   for (int j=0;j<Spud::option_count(key+"tensor_field");j++){
     vtkSmartPointer<vtkDoubleArray> tensor_field= vtkSmartPointer<vtkDoubleArray>::New();
@@ -182,7 +192,6 @@ scalar_field->SetValue(output1->GetCell(k)->GetPointId(n),0.0);
     std::string key2=key+"tensor_field["+b.str()+rhs;
     std::string field_name;
     Spud::get_option(key2+"name",field_name);
-    vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
     tensor_field->SetName((state_name+"::"+field_name).c_str());
     tensor_field->SetNumberOfComponents(9);
     tensor_field->Allocate(output0->GetNumberOfPoints());
