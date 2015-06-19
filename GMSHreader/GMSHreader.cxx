@@ -22,7 +22,14 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <algorithm>
 
+template <class T>
+void endswap(T *objp)
+{
+  unsigned char *memp = reinterpret_cast<unsigned char*>(objp);
+  std::reverse(memp, memp + sizeof(T));
+}
 
 vtkCxxRevisionMacro(GMSHreader, "$Revision: 0.0$");
 vtkStandardNewMacro(GMSHreader);
@@ -48,9 +55,9 @@ int readGMSHheader(std::ifstream& GMSHfile,float &version,int& isBinary,int& isS
   if (datasize != sizeof(double)) return 0;
   if (isBinary==1) {
     int one;
-    GMSHfile.read(( char*) &one,4);
-    isSameEndian=(one==1);
     GMSHfile.read(( char*) &one,1);
+    GMSHfile.read(( char*) &one,4);
+isSameEndian=(one==1);
   } 
   GMSHfile >> line;
   if(line.compare("$EndMeshFormat")) return 0;
@@ -76,7 +83,12 @@ int readGMSHheader(std::ifstream& GMSHfile,float &version,int& isBinary,int& isS
       GMSHfile.read(( char*) &x,sizeof(double));
       GMSHfile.read(( char*) &y,sizeof(double));
       GMSHfile.read(( char*) &z,sizeof(double));
-
+      if (isSameEndian!=1) {
+	endswap(&nodeno);
+	endswap(&x);
+	endswap(&y);
+	endswap(&z);
+      }
       nodeMap[nodeno]=i;
       outpoints->InsertNextPoint(x,y,z);
     }
@@ -121,6 +133,11 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
       GMSHfile.read(( char*) &eleType,4);
       GMSHfile.read(( char*) &nElements,4);
       GMSHfile.read(( char*) &nTags,4);
+      if (isSameEndian!=1) {
+        endswap( &eleType );
+        endswap( &nElements );
+        endswap( &nTags );
+      }
       n+=nElements;
       for (int i=0;i<nElements;i++) {
 	int nele;
@@ -128,6 +145,9 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
 	for (int j=0;j<nTags;j++) {
 	  int tag;
 	  GMSHfile.read(( char*) &tag,4);
+          if (isSameEndian!=1) {
+            endswap(&tag);
+          }
 	  if (j==1) {
 	    ElementaryEntities->InsertNextValue(tag);
 	  }
@@ -141,6 +161,9 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
 	GMSHfile.read(( char*) &node[0],4*nodeCount[eleType]);
 	vtkIdType cellPoints[nodeCount[eleType]];
 	for (int j=0;j<nodeCount[eleType];j++) {
+          if (isSameEndian!=1) {
+            endswap(&node[j]);
+          }
 	  cellPoints[j]=nodeMap[node[j]];
 	}
 	output->InsertNextCell(VTKtype[eleType],nodeCount[eleType],cellPoints);
@@ -235,7 +258,7 @@ int GMSHreader::RequestData(
   ifstream GMSHfile;
   GMSHfile.open(this->FileName);
 
-  this->DebugOff();
+  this->DebugOn();
 
   float version=-66666;
   int isBinary=-66666;
