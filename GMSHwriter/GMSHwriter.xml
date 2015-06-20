@@ -1,0 +1,30 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="writers">
+    <WriterProxy name="GMSHwriter" class="GMSHwriter" label="GMSHwrtier">
+      <Documentation long_help="Write the underlying unstructured grid to a GMSH .msh file." short_help="Save model as a GMSH .msh file.">
+      </Documentation>
+      <InputProperty name="Input" command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+	<DataTypeDomain
+           composite_data_supported="0"
+           name="input_type">
+           <DataType value="vtkUnstructuredGrid"/>
+        </DataTypeDomain>
+      </InputProperty>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+
+      <Hints>
+	<WriterFactory extensions="msh"
+		       file_description="GMSH mesh file format" />
+      </Hints>
+    </WriterProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

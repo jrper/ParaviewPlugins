@@ -1,0 +1,7 @@
+<ParaViewWriters>
+   <Writer
+       name=”GMSHwriter”
+       extensions=”msh”
+       file_description=”GMSH mesh file”>
+   </Writer>
+</ParaViewWriters>
