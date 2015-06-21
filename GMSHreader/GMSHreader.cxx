@@ -235,11 +235,9 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
 	  }
 	}
     }
-
-    output->GetCellData()->AddArray(ElementaryEntities);
-    output->GetCellData()->AddArray(PhysicalIds);
-
   }
+  output->GetCellData()->AddArray(ElementaryEntities);
+  output->GetCellData()->AddArray(PhysicalIds);
   GMSHfile >> line;
   if(line.compare("$EndElements")) return 0;
   return 1;
