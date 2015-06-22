@@ -14,6 +14,8 @@ public:
   vtkUnstructuredGrid* GetInput();
   vtkUnstructuredGrid* GetInput(int port);
 
+  void SetBinaryWriteMode(int isBinary);
+
   void PrintSelf(ostream& os, vtkIndent indent);
  protected:
 
@@ -25,6 +27,7 @@ public:
   virtual int FillInputPortInformation(int,vtkInformation *info);
 
   char* FileName;
+  int isBinary;
  private:
   GMSHwriter(const GMSHwriter&);  // Not implemented.
   void operator=(const GMSHwriter&);  // Not implemented.

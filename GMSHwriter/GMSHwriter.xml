@@ -14,12 +14,25 @@
            <DataType value="vtkUnstructuredGrid"/>
         </DataTypeDomain>
       </InputProperty>
-      <StringVectorProperty name="FileName" 
+     <StringVectorProperty name="FileName" 
 			    command="SetFileName"
 			    animateable="0"
 			    number_of_elements="1">
 	<FileListDomain name="files"/>
       </StringVectorProperty>
+      <IntVectorProperty
+          name="SelectBinaryWriteMode"
+          command="SetBinaryWriteMode"
+          number_of_elements="1"
+          default_values="2">
+        <EnumerationDomain name="enum">
+          <Entry value="1" text="Binary Mode"/>
+          <Entry value="0" text="ASCII Mode"/>
+        </EnumerationDomain>
+        <Documentation>
+          This property indicates which file format will be used.
+        </Documentation>
+         </IntVectorProperty>
 
       <Hints>
 	<WriterFactory extensions="msh"
