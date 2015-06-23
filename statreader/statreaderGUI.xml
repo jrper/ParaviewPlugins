@@ -1,0 +1,7 @@
+<ParaViewReaders>
+   <Reader
+       name=”statreader”
+       extensions=”stat”
+       file_description=”Fluidity stat file”>
+   </Reader>
+</ParaViewReaders>

@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+    <SourceProxy name="statreader" class="statreader" label="statreader">
+      <Documentation long_help="Read a Fluidity .stat file." short_help="Read and display a Fluidity .stat file.">
+      </Documentation>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+
+      <Hints>
+	<ReaderFactory extensions="stat"
+		       file_description="Fluidity stat file" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
