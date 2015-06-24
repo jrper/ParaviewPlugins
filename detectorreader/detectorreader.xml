@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+    <SourceProxy name="detectorreader" class="detectorreader" label="detectorreader">
+      <Documentation long_help="Read a Fluidity .detectors file." short_help="Read and display a Fluidity .detectors file as trajectories.">
+      </Documentation>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+
+      <Hints>
+	<ReaderFactory extensions="detectors"
+		       file_description="Fluidity detectors file" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

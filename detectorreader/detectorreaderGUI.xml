@@ -1,0 +1,7 @@
+<ParaViewReaders>
+   <Reader
+       name=”detectorreader”
+       extensions=”detectors”
+       file_description=”Fluidity detectors file”>
+   </Reader>
+</ParaViewReaders>
