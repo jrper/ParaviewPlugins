@@ -125,7 +125,12 @@ int walk_elements(xmlNode * a_node,int& isBinary,
         if (cur_node->type == XML_ELEMENT_NODE) {
 	  std::string attrName=(const char*)(cur_node->name);
 	  if (attrName.compare("field")==0) {
-            struct columnData field={.isA=UNINITIALISED,.name="",.detector="",.material_phase="",.components=1};
+            struct columnData field;
+	    field.isA=UNINITIALISED;
+	    field.name="";
+	    field.detector="";
+	    field.material_phase;
+	    field.components=1;
 	    add_field(((xmlElement*)cur_node)->attributes,field);
             fields.push_back(field);
 	  } else if (attrName.compare("constant")==0) {
