@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8)
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
+cmake_policy(SET CMP0003 NEW)
+
+if(POLICY CMP0023)
   cmake_policy(SET CMP0023 OLD)
   cmake_policy(SET CMP0042 OLD)
-endif(COMMAND cmake_policy)
+endif(POLICY CMP0023)
 
 
 FIND_PACKAGE(ParaView REQUIRED)
