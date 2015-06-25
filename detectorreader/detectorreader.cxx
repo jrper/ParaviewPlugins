@@ -21,6 +21,8 @@
 #include <map>
 #include <algorithm>
 
+#include <limits>
+
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
@@ -176,7 +178,6 @@ int readDetectorData(std::ifstream& detectorFile,
   vtkSmartPointer<vtkPoints> points
     = vtkSmartPointer<vtkPoints>::New();
 
-  std::stringstream line;
   std::string sline;
 
   vtkSmartPointer<vtkPointData> pd =
@@ -215,8 +216,8 @@ int readDetectorData(std::ifstream& detectorFile,
   int i=0;
   while (getline(detectorFile,sline)) {
     if (sline == "") continue;
-    line.str(sline);
-    std::cout << "loop1" << std::endl;
+    std::stringstream line(sline);
+    std::cout << "loop1 " << line.str()<< std::endl;
     for(std::vector<struct columnData>::iterator it = fields.begin();
 	it != fields.end(); ++it) {
      std::cout << "loop2" << std::endl;
@@ -226,7 +227,7 @@ int readDetectorData(std::ifstream& detectorFile,
 	  double x[3]={0.0,0.0,0.0};
 	  for (int j=0;j<it->components;++j) {
 	    line>>x[j];
-	    std::cout << x[j] <<endl;
+	    std::cout<<"x_"<<j+1<<":"<< x[j] <<std::endl;
 	  }
 	  points->InsertNextPoint(x);
 	  break;
@@ -235,7 +236,16 @@ int readDetectorData(std::ifstream& detectorFile,
 	{
 	  double val[it->components];
 	  for (int j=0;j<it->components;++j) {
-	    line>>val[j];
+	    std::string s;
+	    line>>s;
+	    if (s.compare("NaN")==0) {
+	      val[j]=0.0;
+	      //   val[j]=std::numeric_limits<double>::quiet_NaN();
+	    } else {
+	      std::stringstream ss(s);
+	      ss>>val[j];
+	    }
+	    std::cout<<"data:"<<s<<std::endl;
 	  }
 	  pd->GetArray((it->material_phase+"::"+it->name).c_str())->InsertTuple(detector_lookup[it->detector]+i*detector_lookup.size(),val);
 	  break;
@@ -244,7 +254,8 @@ int readDetectorData(std::ifstream& detectorFile,
 	{
 	  double mval[it->components];
 	  for (int j=0;j<it->components;++j) {
-	    detectorFile>>mval[j];
+	    line>>mval[j];
+	    std::cout<< "metadata "<<mval[j]<<std::endl;
 	  }
 	  for (int k=0;k<detector_lookup.size();++k) {
 	    pd->GetArray(it->name.c_str())->InsertNextTuple(mval);
