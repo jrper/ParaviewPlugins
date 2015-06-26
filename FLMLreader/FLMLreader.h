@@ -13,6 +13,9 @@ public:
   FLMLreader();
   ~FLMLreader();
 
+  int FillOutputPortInformation(int port, 
+				vtkInformation* info);
+
   virtual int RequestData(
 			  vtkInformation* request,
 			  vtkInformationVector** InputVector,
