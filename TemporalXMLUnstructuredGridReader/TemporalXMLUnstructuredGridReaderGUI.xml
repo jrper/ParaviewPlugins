@@ -1,0 +1,7 @@
+<ParaViewReaders>
+   <Reader
+       name=”TemporalXMLUnstructuredGridReader”
+       extensions=”vtu”
+       file_description=”GMSH mesh file”>
+   </Reader>
+</ParaViewReaders>

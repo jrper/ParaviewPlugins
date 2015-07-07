@@ -1,0 +1,129 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="internal_sources">
+    <SourceProxy class="TemporalXMLUnstructuredGridReader" 
+		 label="TemporalXMLUnstructuredGridReader" 
+		 name="TemporalXMLUnstructuredGridReaderCore">
+      <Documentation long_help="Read a .vtu file with Fluidity times." short_help="Read a .vtu file, with Fluidity times.">
+      </Documentation>
+      <StringVectorProperty name="FileName" 
+			    command="SetFileName"
+			    animateable="0"
+			    number_of_elements="1"
+			    panel_visibility="never">
+	<FileListDomain name="files"/>
+      </StringVectorProperty>
+      <DoubleVectorProperty information_only="1"
+                            name="TimestepValues"
+                            repeatable="1">
+        <TimeStepsInformationHelper />
+        <Documentation>Available timestep values.</Documentation>
+      </DoubleVectorProperty>
+      <StringVectorProperty information_only="1"
+                            name="CellArrayInfo">
+        <ArraySelectionInformationHelper attribute_name="Cell" />
+      </StringVectorProperty>
+      <StringVectorProperty command="SetCellArrayStatus"
+                            element_types="2 0"
+                            information_property="CellArrayInfo"
+                            label="Cell Arrays"
+                            name="CellArrayStatus"
+                            number_of_elements="0"
+                            number_of_elements_per_command="2"
+                            repeat_command="1">
+        <ArraySelectionDomain name="array_list">
+          <RequiredProperties>
+            <Property function="ArrayList"
+                      name="CellArrayInfo" />
+          </RequiredProperties>
+        </ArraySelectionDomain>
+        <Documentation>This property lists which cell-centered arrays to
+        read.</Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty information_only="1"
+                            name="PointArrayInfo">
+        <ArraySelectionInformationHelper attribute_name="Point" />
+      </StringVectorProperty>
+      <StringVectorProperty command="SetPointArrayStatus"
+                            element_types="2 0"
+                            information_property="PointArrayInfo"
+                            label="Point Arrays"
+                            name="PointArrayStatus"
+                            number_of_elements="0"
+                            number_of_elements_per_command="2"
+                            repeat_command="1">
+        <ArraySelectionDomain name="array_list">
+          <RequiredProperties>
+            <Property function="ArrayList"
+                      name="PointArrayInfo" />
+          </RequiredProperties>
+        </ArraySelectionDomain>
+        <Documentation>This property lists which point-centered arrays to
+        read.</Documentation>
+	</StringVectorProperty>
+      <Hints>
+	<ReaderFactory extensions="vtu"
+		       file_description="Temporal VTK unstructured grid format" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+  <ProxyGroup name="sources">
+    <SourceProxy class="vtkFileSeriesReader"
+                 file_name_method="SetFileName"
+                 label="Temporal XML Unstructured Grid Reader"
+                 name="Temporal XMLUnstructuredGridReader"
+                 si_class="vtkSIMetaReaderProxy">
+      <Documentation long_help="Reads serial VTK XML unstructured grid data files."
+                     short_help="Read VTK XML unstructured grid data files.">
+                     The XML Unstructured Grid reader reads the VTK XML
+                     unstructured grid data file format. The standard extension
+                     is .vtu. This reader also supports file
+                     series.</Documentation>
+      <SubProxy>
+        <Proxy name="Reader"
+               proxygroup="internal_sources"
+               proxyname="TemporalXMLUnstructuredGridReaderCore"></Proxy>
+        <ExposedProperties>
+          <PropertyGroup label="Cell/Point Array Status"
+                         name="CellPointArrayStatus"
+                         panel_visibility="default"
+                         panel_widget="ArrayStatus">
+            <Property name="CellArrayInfo" />
+            <Property name="CellArrayStatus" />
+            <Property name="PointArrayInfo" />
+            <Property name="PointArrayStatus" />
+          </PropertyGroup>
+        </ExposedProperties>
+      </SubProxy>
+      <StringVectorProperty command="GetCurrentFileName"
+                            information_only="1"
+                            name="FileNameInfo">
+        <SimpleStringInformationHelper />
+      </StringVectorProperty>
+      <StringVectorProperty animateable="0"
+                            clean_command="RemoveAllFileNames"
+                            command="AddFileName"
+                            information_property="FileNameInfo"
+                            name="FileName"
+                            number_of_elements="1"
+                            panel_visibility="never"
+                            repeat_command="1">
+        <FileListDomain name="files" />
+        <Documentation>The list of files to be read by the reader. Each file is
+        expected to be in the VTK XML unstructured grid data format. The
+        standard extension is .vtu. If more than one file is specified, the
+        reader will switch to file series mode in which it will pretend that it
+        can support time and provide one file per time step.</Documentation>
+      </StringVectorProperty>
+      <DoubleVectorProperty information_only="1"
+                            name="TimestepValues"
+                            repeatable="1">
+        <TimeStepsInformationHelper />
+        <Documentation>Available timestep values.</Documentation>
+      </DoubleVectorProperty>
+      <Hints>
+        <ReaderFactory extensions="vtu"
+                       file_description="Temporal VTK Unstructured Grid Files" />
+      </Hints>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
