@@ -9,6 +9,8 @@
 #include "vtkSmartPointer.h"
 #include "vtkXMLDataParser.h"
 
+#include <iostream>
+
 vtkCxxRevisionMacro(TemporalXMLUnstructuredGridReader, "$Revision: 0.0$");
 vtkStandardNewMacro(TemporalXMLUnstructuredGridReader);
 
@@ -53,12 +55,34 @@ int TemporalXMLUnstructuredGridReader::RequestInformation(
     }
   ntimes=ePrimary->GetScalarAttribute("Time",time);
   if (ntimes==0) {
-    vtkSmartPointer<vtkXMLUnstructuredGridReader> reader = vtkSmartPointer<vtkXMLUnstructuredGridReader>::New();
-    reader->SetFileName(this->FileName);
-    reader->Update();
-    time=reader->GetOutput()->GetPointData()->GetArray("Time")->GetRange()[0];
+    for(i=0; i < ePrimary->GetNumberOfNestedElements(); ++i) {
+      vtkXMLDataElement* eNested = ePrimary->GetNestedElement(i);
+      if(strcmp(eNested->GetName(), "Piece") == 0) {
+	ePrimary = eNested;
+	break;
+      }
+    }
+    for(i=0; i < ePrimary->GetNumberOfNestedElements(); ++i) {
+      vtkXMLDataElement* eNested = ePrimary->GetNestedElement(i);
+      if(strcmp(eNested->GetName(), "PointData") == 0) {
+	ePrimary = eNested;
+	break;
+      }
+    }
+    for(i=0; i < ePrimary->GetNumberOfNestedElements(); ++i) {
+      vtkXMLDataElement* eNested = ePrimary->GetNestedElement(i);
+      const char* name=eNested->GetAttribute("Name");
+      if(strcmp(eNested->GetName(), "DataArray") == 0
+	   && (strcmp(name,"Time") == 0 
+		 || (strlen(name)>=6
+		       && strcmp(&name[strlen(name)-6],"::Time") == 0))){
+	ePrimary = eNested;
+	break;
+      } 
+    }
+    ntimes=ePrimary->GetScalarAttribute("RangeMax",time);
   }
- outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(),&time,1);
+if (ntimes>0)  outInfo->Set(vtkStreamingDemandDrivenPipeline::TIME_STEPS(),&time,1);
   }
 
   return 1;

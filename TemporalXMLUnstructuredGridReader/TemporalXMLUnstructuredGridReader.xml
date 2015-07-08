@@ -69,8 +69,8 @@
   <ProxyGroup name="sources">
     <SourceProxy class="vtkFileSeriesReader"
                  file_name_method="SetFileName"
-                 label="Temporal XML Unstructured Grid Reader"
-                 name="Temporal XMLUnstructuredGridReader"
+                 label="Temporally aware XML Unstructured Grid Reader"
+                 name="XMLUnstructuredGridReader"
                  si_class="vtkSIMetaReaderProxy">
       <Documentation long_help="Reads serial VTK XML unstructured grid data files."
                      short_help="Read VTK XML unstructured grid data files.">
