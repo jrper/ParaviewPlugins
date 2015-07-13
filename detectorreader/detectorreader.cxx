@@ -209,7 +209,6 @@ int readDetectorData(std::ifstream& detectorFile,
 	  data->SetName((it->material_phase+"::"+it->name).c_str());
 	  data->SetNumberOfComponents(it->components);
 	  pd->AddArray(data);
-	  std::cout << (it->material_phase+"::"+it->name);
 	}
 	break;
       }
@@ -222,17 +221,14 @@ int readDetectorData(std::ifstream& detectorFile,
   while (getline(detectorFile,sline)) {
     if (sline == "") continue;
     std::stringstream line(sline);
-    std::cout << "loop1 " << line.str()<< std::endl;
     for(std::vector<struct columnData>::iterator it = fields.begin();
 	it != fields.end(); ++it) {
-     std::cout << "loop2" << std::endl;
       switch (it->isA) {
       case DETECTOR_POSITION:
 	{
 	  double x[3]={0.0,0.0,0.0};
 	  for (int j=0;j<it->components;++j) {
 	    line>>x[j];
-	    std::cout<<"x_"<<j+1<<":"<< x[j] <<std::endl;
 	  }
 	  points->InsertNextPoint(x);
 	  break;
@@ -250,7 +246,6 @@ int readDetectorData(std::ifstream& detectorFile,
 	      std::stringstream ss(s);
 	      ss>>val[j];
 	    }
-	    std::cout<<"data:"<<s<<std::endl;
 	  }
 	  pd->GetArray((it->material_phase+"::"+it->name).c_str())->InsertTuple(detector_lookup[it->detector]+i*detector_lookup.size(),val);
 	  break;
@@ -260,7 +255,6 @@ int readDetectorData(std::ifstream& detectorFile,
 	  double mval[it->components];
 	  for (int j=0;j<it->components;++j) {
 	    line>>mval[j];
-	    std::cout<< "metadata "<<mval[j]<<std::endl;
 	  }
 	  for (int k=0;k<detector_lookup.size();++k) {
 	    pd->GetArray(it->name.c_str())->InsertNextTuple(mval);
@@ -334,7 +328,6 @@ int readBinaryDetectorData(std::ifstream& detectorFile,
 	  data->SetName((it->material_phase+"::"+it->name).c_str());
 	  data->SetNumberOfComponents(it->components);
 	  pd->AddArray(data);
-	  std::cout << (it->material_phase+"::"+it->name);
 	}
 	break;
       }
@@ -432,7 +425,7 @@ int detectorreader::RequestData(
   std::map<std::string,int> detectors_lookup;
   readDetectorHeader(detectorFile,isBinary,fields,detectors_lookup);
 
-  this->DebugOn();
+  //  this->DebugO();
   vtkDebugMacro(<<detectors_lookup.size());
 
   // read the data
