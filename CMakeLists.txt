@@ -13,9 +13,9 @@ file(MAKE_DIRECTORY plugins)
 
 add_subdirectory(ShowCVs)
 add_subdirectory(VelocitiesOnCVs)
-add_subdirectory(GMSHreader)
-add_subdirectory(SplitBcs)
 add_subdirectory(FLMLreader)
+add_subdirectory(SplitBcs)
+add_subdirectory(GMSHreader)
 
 file(GLOB TARGETS */*.dylib)
 
