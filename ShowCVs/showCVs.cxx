@@ -58,7 +58,7 @@ int showCVs::RequestData(
 
   vtkIdTypeArray* faces;
 
-  this->DebugOn();
+  this->DebugOff();
   vtkCell* cell=input->GetCell(0);
   int NPointsOut=0;
   int discontinuous=0;
