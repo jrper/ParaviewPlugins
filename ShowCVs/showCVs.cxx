@@ -58,7 +58,7 @@ int showCVs::RequestData(
 
   vtkIdTypeArray* faces;
 
-  this->DebugOff();
+  this->DebugOn();
   vtkCell* cell=input->GetCell(0);
   int NPointsOut=0;
   int discontinuous=0;
@@ -99,6 +99,19 @@ int showCVs::RequestData(
 	  input->InitializeFacesRepresentation(NC);
 	  faces=input->GetFaces();
 	  NPointsOut=4*NC;
+	}
+      }
+      break;
+    case  VTK_QUADRATIC_TRIANGLE:
+      {
+	vtkDebugMacro(<<"Triangular Quadratic Mesh " );
+	if (6*NC==NP){
+	  discontinuous=-1;
+	  NPointsOut=6*NC;
+	} else {
+	  vtkDebugMacro(<<"Continuous " );
+	  discontinuous=1;
+	  NPointsOut=6*NC;
 	}
       }
       break; 
@@ -354,6 +367,129 @@ int showCVs::RequestData(
 		myHex->Delete();
 		break;
 	      }
+	    case  VTK_QUADRATIC_TRIANGLE:
+	   {
+	     ptsIds->Allocate(13);
+	     vtkTriangle::TriangleCenter(pts->GetPoint(0),
+					 pts->GetPoint(1),
+					 pts->GetPoint(2),
+					 center);
+	     vtkQuad* myQuad=vtkQuad::New();
+
+	     vtkPolygon* myPoly=vtkPolygon::New();
+
+	     myPoly->GetPointIds()->SetNumberOfIds(5);
+	     
+	     ptsIds->InsertNextId(cell->GetPointIds()->GetId(0));
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.75*pts->GetPoint(0)[0]+0.25*pts->GetPoint(1)[0],
+		  0.75*pts->GetPoint(0)[1]+0.25*pts->GetPoint(1)[1],
+		  0.75*pts->GetPoint(0)[2]+0.25*pts->GetPoint(1)[2]
+							   ));
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.25*pts->GetPoint(0)[0]+0.75*pts->GetPoint(1)[0],
+		  0.25*pts->GetPoint(0)[1]+0.75*pts->GetPoint(1)[1],
+		  0.25*pts->GetPoint(0)[2]+0.75*pts->GetPoint(1)[2]
+							   ));
+	     ptsIds->InsertNextId(cell->GetPointIds()->GetId(1));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+2.0/3.0*pts->GetPoint(0)[0]+1.0/6.0*pts->GetPoint(1)[0]+1.0/6.0*pts->GetPoint(2)[0],
+2.0/3.0*pts->GetPoint(0)[1]+1.0/6.0*pts->GetPoint(1)[1]+1.0/6.0*pts->GetPoint(2)[1],
+2.0/3.0*pts->GetPoint(0)[2]+1.0/6.0*pts->GetPoint(1)[2]+1.0/6.0*pts->GetPoint(2)[2]));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+1.0/6.0*pts->GetPoint(0)[0]+2.0/3.0*pts->GetPoint(1)[0]+1.0/6.0*pts->GetPoint(2)[0],
+1.0/6.0*pts->GetPoint(0)[1]+2.0/3.0*pts->GetPoint(1)[1]+1.0/6.0*pts->GetPoint(2)[1],
+1.0/6.0*pts->GetPoint(0)[2]+2.0/3.0*pts->GetPoint(1)[2]+1.0/6.0*pts->GetPoint(2)[2]));
+
+             ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.75*pts->GetPoint(0)[0]+0.25*pts->GetPoint(2)[0],
+		  0.75*pts->GetPoint(0)[1]+0.25*pts->GetPoint(2)[1],
+		  0.75*pts->GetPoint(0)[2]+0.25*pts->GetPoint(2)[2]
+							   ));
+
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.75*pts->GetPoint(1)[0]+0.25*pts->GetPoint(2)[0],
+		  0.75*pts->GetPoint(1)[1]+0.25*pts->GetPoint(2)[1],
+		  0.75*pts->GetPoint(1)[2]+0.25*pts->GetPoint(2)[2]
+							   ));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+1.0/3.0*pts->GetPoint(0)[0]+1.0/3.0*pts->GetPoint(1)[0]+1.0/3.0*pts->GetPoint(2)[0],
+1.0/3.0*pts->GetPoint(0)[1]+1.0/3.0*pts->GetPoint(1)[1]+1.0/3.0*pts->GetPoint(2)[1],
+1.0/3.0*pts->GetPoint(0)[2]+1.0/3.0*pts->GetPoint(1)[2]+1.0/3.0*pts->GetPoint(2)[2]));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+1.0/6.0*pts->GetPoint(0)[0]+1.0/6.0*pts->GetPoint(1)[0]+2.0/3.0*pts->GetPoint(2)[0],
+1.0/6.0*pts->GetPoint(0)[1]+1.0/6.0*pts->GetPoint(1)[1]+2.0/3.0*pts->GetPoint(2)[1],
+1.0/6.0*pts->GetPoint(0)[2]+1.0/6.0*pts->GetPoint(1)[2]+2.0/3.0*pts->GetPoint(2)[2]));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.25*pts->GetPoint(0)[0]+0.75*pts->GetPoint(2)[0],
+		  0.25*pts->GetPoint(0)[1]+0.75*pts->GetPoint(2)[1],
+		  0.25*pts->GetPoint(0)[2]+0.75*pts->GetPoint(2)[2]
+							   ));
+
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.25*pts->GetPoint(1)[0]+0.75*pts->GetPoint(2)[0],
+		  0.25*pts->GetPoint(1)[1]+0.75*pts->GetPoint(2)[1],
+		  0.25*pts->GetPoint(1)[2]+0.75*pts->GetPoint(2)[2]
+							   ));
+
+	     ptsIds->InsertNextId(cell->GetPointIds()->GetId(2));
+	  
+	     myQuad->GetPointIds()->SetId(0,ptsIds->GetId(0));
+	     myQuad->GetPointIds()->SetId(1,ptsIds->GetId(1));
+	     myQuad->GetPointIds()->SetId(2,ptsIds->GetId(4));
+	     myQuad->GetPointIds()->SetId(3,ptsIds->GetId(6));
+	     output->InsertNextCell(myQuad->GetCellType(),
+				    myQuad->GetPointIds());
+
+	     myPoly->GetPointIds()->SetId(0,ptsIds->GetId(1));
+	     myPoly->GetPointIds()->SetId(1,ptsIds->GetId(2));
+	     myPoly->GetPointIds()->SetId(2,ptsIds->GetId(5));
+	     myPoly->GetPointIds()->SetId(3,ptsIds->GetId(8));
+	     myPoly->GetPointIds()->SetId(4,ptsIds->GetId(4));
+	     output->InsertNextCell(myPoly->GetCellType(),
+				    myPoly->GetPointIds());
+
+	     myQuad->GetPointIds()->SetId(0,ptsIds->GetId(2));
+	     myQuad->GetPointIds()->SetId(1,ptsIds->GetId(3));
+	     myQuad->GetPointIds()->SetId(2,ptsIds->GetId(7));
+	     myQuad->GetPointIds()->SetId(3,ptsIds->GetId(5));
+	     output->InsertNextCell(myQuad->GetCellType(),
+				    myQuad->GetPointIds());
+
+	     myPoly->GetPointIds()->SetId(0,ptsIds->GetId(10));
+	     myPoly->GetPointIds()->SetId(1,ptsIds->GetId(6));
+	     myPoly->GetPointIds()->SetId(2,ptsIds->GetId(4));
+	     myPoly->GetPointIds()->SetId(3,ptsIds->GetId(8));
+	     myPoly->GetPointIds()->SetId(4,ptsIds->GetId(9));
+	     output->InsertNextCell(myPoly->GetCellType(),
+				    myPoly->GetPointIds());
+
+	     myPoly->GetPointIds()->SetId(0,ptsIds->GetId(7));
+	     myPoly->GetPointIds()->SetId(1,ptsIds->GetId(11));
+	     myPoly->GetPointIds()->SetId(2,ptsIds->GetId(9));
+	     myPoly->GetPointIds()->SetId(3,ptsIds->GetId(8));
+	     myPoly->GetPointIds()->SetId(4,ptsIds->GetId(5));
+	     output->InsertNextCell(myPoly->GetCellType(),
+				    myPoly->GetPointIds());
+
+	     myQuad->GetPointIds()->SetId(0,ptsIds->GetId(9));
+	     myQuad->GetPointIds()->SetId(1,ptsIds->GetId(11));
+	     myQuad->GetPointIds()->SetId(2,ptsIds->GetId(12));
+	     myQuad->GetPointIds()->SetId(3,ptsIds->GetId(10));
+	     output->InsertNextCell(myQuad->GetCellType(),
+				    myQuad->GetPointIds());
+
+
+	     myQuad->Delete();
+	     myPoly->Delete();
+	     break;
+	   }
 
 	    }
 
@@ -395,15 +531,13 @@ int showCVs::RequestData(
 
       for(vtkIdType i=0;i<NC;i++)
 	{
+	  vtkCell* cell=input->GetCell(i);
+	  vtkPoints* pts=cell->GetPoints();
+	  vtkIdList* ptIds=cell->GetPointIds();
 	  switch (input->GetCellType(i))
 	    {
 	    case  VTK_TRIANGLE:
-
-	      vtkCell* cell=input->GetCell(i);
-
-
-	      vtkPoints* pts=cell->GetPoints();
-	      vtkIdList* ptIds=cell->GetPointIds();
+	      {
 
 	      PointList->InsertId(i,outpoints->InsertNextPoint(
 				     (cell->GetPoints()->GetPoint(0)[0]
@@ -416,6 +550,123 @@ int showCVs::RequestData(
 		      	      +cell->GetPoints()->GetPoint(1)[2]
 				      +cell->GetPoints()->GetPoint(2)[2])/3.0
 							       ));
+	      }
+	      break;
+	      case  VTK_QUADRATIC_TRIANGLE:
+	      {
+
+
+	      PointList->InsertId(i,outpoints->InsertNextPoint(
+				     0.75*cell->GetPoints()->GetPoint(0)[0]
+				      +0.25*cell->GetPoints()->GetPoint(1)[0],
+				     0.75*cell->GetPoints()->GetPoint(0)[1]
+		      	      +0.25*cell->GetPoints()->GetPoint(1)[1],
+				     0.75*cell->GetPoints()->GetPoint(0)[2]
+		      	      +0.25*cell->GetPoints()->GetPoint(1)[2]
+							       ));
+
+	      PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (0.25*cell->GetPoints()->GetPoint(0)[0]
+				      +0.75*cell->GetPoints()->GetPoint(1)[0]),
+				     (0.25*cell->GetPoints()->GetPoint(0)[1]
+				      +0.75*cell->GetPoints()->GetPoint(1)[1]),
+				     (0.25*cell->GetPoints()->GetPoint(0)[2]
+				      +0.75*cell->GetPoints()->GetPoint(1)[2])
+							       ));
+
+
+
+	      PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (4.0*cell->GetPoints()->GetPoint(0)[0]
+		      	      +cell->GetPoints()->GetPoint(1)[0]
+				      +cell->GetPoints()->GetPoint(2)[0])/6.0,
+				     (4.0*cell->GetPoints()->GetPoint(0)[1]
+		      	      +cell->GetPoints()->GetPoint(1)[1]
+				      +cell->GetPoints()->GetPoint(2)[1])/6.0,
+				     (4.0*cell->GetPoints()->GetPoint(0)[2]
+		      	      +cell->GetPoints()->GetPoint(1)[2]
+				      +cell->GetPoints()->GetPoint(2)[2])/6.0
+							       ));
+
+
+	       PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (cell->GetPoints()->GetPoint(0)[0]
+		      	      +4.0*cell->GetPoints()->GetPoint(1)[0]
+				      +cell->GetPoints()->GetPoint(2)[0])/6.0,
+				     (cell->GetPoints()->GetPoint(0)[1]
+		      	      +4.0*cell->GetPoints()->GetPoint(1)[1]
+				      +cell->GetPoints()->GetPoint(2)[1])/6.0,
+				     (cell->GetPoints()->GetPoint(0)[2]
+		      	      +4.0*cell->GetPoints()->GetPoint(1)[2]
+				      +cell->GetPoints()->GetPoint(2)[2])/6.0
+							       ));
+
+	       PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (0.75*cell->GetPoints()->GetPoint(0)[0]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[0]),
+				     (0.75*cell->GetPoints()->GetPoint(0)[1]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[1]),
+				     (0.75*cell->GetPoints()->GetPoint(0)[2]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[2])
+							       ));
+
+	       PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (0.75*cell->GetPoints()->GetPoint(1)[0]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[0]),
+				     (0.75*cell->GetPoints()->GetPoint(1)[1]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[1]),
+				     (0.75*cell->GetPoints()->GetPoint(1)[2]
+		      	      +0.25*cell->GetPoints()->GetPoint(2)[2])
+							       ));
+
+
+	       PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (cell->GetPoints()->GetPoint(0)[0]
+		      	      +cell->GetPoints()->GetPoint(1)[0]
+				      +cell->GetPoints()->GetPoint(2)[0])/3.0,
+				     (cell->GetPoints()->GetPoint(0)[1]
+		      	      +cell->GetPoints()->GetPoint(1)[1]
+				      +cell->GetPoints()->GetPoint(2)[1])/3.0,
+				     (cell->GetPoints()->GetPoint(0)[2]
+		      	      +cell->GetPoints()->GetPoint(1)[2]
+				      +cell->GetPoints()->GetPoint(2)[2])/3.0
+							       ));
+
+	       PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (cell->GetPoints()->GetPoint(0)[0]
+		      	      +cell->GetPoints()->GetPoint(1)[0]
+				    +4.0*cell->GetPoints()->GetPoint(2)[0])/6.0,
+				     (cell->GetPoints()->GetPoint(0)[1]
+		      	      +cell->GetPoints()->GetPoint(1)[1]
+				    +4.0*cell->GetPoints()->GetPoint(2)[1])/6.0,
+				     (cell->GetPoints()->GetPoint(0)[2]
+		      	      +4.0*cell->GetPoints()->GetPoint(1)[2]
+				    +4.0*cell->GetPoints()->GetPoint(2)[2])/6.0
+							       ));
+
+
+	       	      PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (0.25*cell->GetPoints()->GetPoint(0)[0]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[0]),
+				     (0.25*cell->GetPoints()->GetPoint(0)[1]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[1]),
+				     (0.25*cell->GetPoints()->GetPoint(0)[2]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[2])
+							       ));
+
+		      PointList->InsertId(i,outpoints->InsertNextPoint(
+				     (0.25*cell->GetPoints()->GetPoint(1)[0]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[0]),
+				     (0.25*cell->GetPoints()->GetPoint(1)[1]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[1]),
+				     (0.25*cell->GetPoints()->GetPoint(1)[2]
+		      	      +0.75*cell->GetPoints()->GetPoint(2)[2])
+							       ));
+
+
+
+	      }
+	      break;
 	    }
 	}
 
@@ -478,7 +729,59 @@ int showCVs::RequestData(
 		      }
 		    }
 		}
+	    case VTK_QUADRATIC_TRIANGLE:
+for (vtkIdType j=0; j<3;j++)
+		{
+		  vtkCell* cellEdge=cell->GetEdge(j);
+		  vtkSmartPointer<vtkIdList> cellNeighbours=
+		    vtkSmartPointer<vtkIdList>::New();
+		  vtkSmartPointer<vtkIdList> cellUniqueNeighbours=
+		    vtkSmartPointer<vtkIdList>::New();
+	     
+		  if (cellEdge->GetPointIds()->GetNumberOfIds()>0)
+		    { 
+		      vtkIdList* edgePoints=cellEdge->GetPointIds();
+		      input->GetCellNeighbors(i,edgePoints,cellNeighbours);
+		      for (vtkIdType k=0;k<cellNeighbours->GetNumberOfIds();k++)
+			{
+			  
+			  if (cellNeighbours->GetId(k)>=0)
+			    if (input->GetCellType(cellNeighbours->GetId(k)) == VTK_TRIANGLE)
+			      {
+				cellUniqueNeighbours->InsertUniqueId(cellNeighbours->GetId(k));
+			      }
+			}
 
+		      if (cellUniqueNeighbours->GetNumberOfIds()==0 ||
+			  cellUniqueNeighbours->GetId(0)>i)
+			{
+		   vtkIdType newPointId=outpoints->InsertNextPoint(
+		   (input->GetPoints()->GetPoint(edgePoints->GetId(0))[0]
+		    +input->GetPoints()->GetPoint(edgePoints->GetId(1))[0])/2.0,
+		   (input->GetPoints()->GetPoint(edgePoints->GetId(0))[1]
+		    +input->GetPoints()->GetPoint(edgePoints->GetId(1))[1])/2.0,
+		   (input->GetPoints()->GetPoint(edgePoints->GetId(0))[2]
+		    +input->GetPoints()->GetPoint(edgePoints->GetId(1))[2])/2.0
+								      );
+		
+		  EdgeList->InsertId(3*i+j,newPointId);
+		  if (cellUniqueNeighbours->GetNumberOfIds()==0){
+		    mymap.insert(std::pair<vtkPair,vtkIdType>
+				 (vtkPair(i,i),
+				  newPointId));
+		      } else {
+		    vtkIdType k=cellUniqueNeighbours->GetId(0);
+		    mymap.insert(std::pair<vtkPair,vtkIdType>
+				 (vtkPair(i,k),
+				  newPointId));
+		    mymap.insert(std::pair<vtkPair,vtkIdType>
+				 (vtkPair(k,i),
+				  newPointId));
+		      }	  
+			} else {
+		      }
+		    }
+		}
 	    }
 	}
 
