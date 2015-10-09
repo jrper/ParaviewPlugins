@@ -10,7 +10,6 @@ FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
 
 include_directories(${CPPUNIT_INC})
-link_directories(${CPPUNIT_LIB})
 
 file(MAKE_DIRECTORY plugins)
 
@@ -19,7 +18,14 @@ add_subdirectory(VelocitiesOnCVs)
 add_subdirectory(SplitBcs)
 add_subdirectory(GMSHreader)
 add_subdirectory(FLMLreader)
+add_subdirectory(TemporalXMLUnstructuredGridReader)
+add_subdirectory(detectorreader)
+add_subdirectory(statreader)
 add_subdirectory(Tests)
+
+
+
+add_custom_target(plugins DEPENDS ShowCVs VelocitiesOnCVs SplitBcs GMSHreader FLMLreader TemporalXMLUnstructuredGridReader detectorreader statreader)
 
 file(GLOB TARGETS */*.dylib)
 

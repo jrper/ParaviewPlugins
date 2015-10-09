@@ -1,4 +1,4 @@
-add_executable(test-paraview-plugins TestParaviewPlugins.cxx)
+add_executable(test-paraview-plugins EXCLUDE_FROM_ALL TestParaviewPlugins.cxx)
 target_link_libraries(
     test-paraview-plugins
     cppunit
