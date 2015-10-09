@@ -9,6 +9,9 @@ set(CMAKE_MACOSX_RPATH 1)
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
 
+include_directories(${CPPUNIT_INC})
+link_directories(${CPPUNIT_LIB})
+
 file(MAKE_DIRECTORY plugins)
 
 add_subdirectory(ShowCVs)
@@ -16,7 +19,11 @@ add_subdirectory(VelocitiesOnCVs)
 add_subdirectory(SplitBcs)
 add_subdirectory(GMSHreader)
 add_subdirectory(FLMLreader)
+add_subdirectory(Tests)
 
 file(GLOB TARGETS */*.dylib)
 
 file(COPY ${TARGETS} DESTINATION plugins)
+
+
+
