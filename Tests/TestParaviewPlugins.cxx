@@ -12,12 +12,19 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/XmlOutputter.h>
 
+#include "../ShowCVs/showCVs.h"
+#include "../GMSHreader/GMSHreader.h"
+#include "../GMSHwriter/GMSHwriter.h"
+
 using namespace CppUnit;
 
 class TestParaviewPlugins : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(TestParaviewPlugins);
   CPPUNIT_TEST(testNothing);
+  CPPUNIT_TEST(testShowCVs);
+  CPPUNIT_TEST(testGMSHreader);
+  CPPUNIT_TEST(testGMSHwriter);
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -26,6 +33,9 @@ public:
 
 protected:
   void testNothing(void);
+  void testShowCVs(void);
+  void testGMSHreader(void);
+  void testGMSHwriter(void);
   
 private:
 
@@ -34,6 +44,24 @@ private:
 void TestParaviewPlugins::testNothing(void)
 {
   CPPUNIT_ASSERT(1==1);
+}
+
+void TestParaviewPlugins::testShowCVs(void)
+{
+  showCVs::showCVs* instance= showCVs::New();
+  CPPUNIT_ASSERT(instance);
+}
+
+void TestParaviewPlugins::testGMSHreader(void)
+{
+  GMSHreader::GMSHreader* instance= GMSHreader::New();
+  CPPUNIT_ASSERT(instance);
+}
+
+void TestParaviewPlugins::testGMSHwriter(void)
+{
+  GMSHwriter::GMSHwriter* instance= GMSHwriter::New();
+  CPPUNIT_ASSERT(instance);
 }
 
 

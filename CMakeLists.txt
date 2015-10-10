@@ -17,6 +17,7 @@ add_subdirectory(ShowCVs)
 add_subdirectory(VelocitiesOnCVs)
 add_subdirectory(SplitBcs)
 add_subdirectory(GMSHreader)
+add_subdirectory(GMSHwriter)
 add_subdirectory(FLMLreader)
 add_subdirectory(TemporalXMLUnstructuredGridReader)
 add_subdirectory(detectorreader)
@@ -25,7 +26,7 @@ add_subdirectory(Tests)
 
 
 
-add_custom_target(plugins DEPENDS ShowCVs VelocitiesOnCVs SplitBcs GMSHreader FLMLreader TemporalXMLUnstructuredGridReader detectorreader statreader)
+add_custom_target(plugins DEPENDS ShowCVs VelocitiesOnCVs SplitBcs GMSHreader GMSHwriter FLMLreader TemporalXMLUnstructuredGridReader detectorreader statreader)
 
 file(GLOB TARGETS */*.dylib)
 
