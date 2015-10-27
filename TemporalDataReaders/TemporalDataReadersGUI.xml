@@ -4,4 +4,9 @@
        extensions=”vtu”
        file_description=”GMSH mesh file”>
    </Reader>
+   <Reader
+       name=”TemporalXMLPolyDataReader”
+       extensions=”vtp”
+       file_description=”GMSH mesh file”>
+   </Reader>
 </ParaViewReaders>
