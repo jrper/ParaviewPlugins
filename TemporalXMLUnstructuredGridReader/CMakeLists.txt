@@ -11,6 +11,6 @@ INCLUDE(${PARAVIEW_USE_FILE})
 ADD_PARAVIEW_PLUGIN(
   TemporalXMLUnstructuredGridReader "0.0"
   SERVER_MANAGER_XML TemporalXMLUnstructuredGridReader.xml
-  SERVER_MANAGER_SOURCES TemporalXMLUnstructuredGridReader.h TemporalXMLUnstructuredGridReader.cxx TemporalXMLPUnstructuredGridReader.h TemporalXMLPUnstructuredGridReader.cxx
+  SERVER_MANAGER_SOURCES TemporalXMLUnstructuredGridReader.h TemporalXMLUnstructuredGridReader.cxx TemporalXMLPUnstructuredGridReader.h TemporalXMLPUnstructuredGridReader.cxx TemporalXMLPolyDataReader.h TemporalXMLPolyDataReader.cxx TemporalXMLPPolyDataReader.h TemporalXMLPPolyDataReader.cxx
   GUI_RESOURCE_FILES TemporalXMLUnstructuredGridReaderGUI.xml
   )
