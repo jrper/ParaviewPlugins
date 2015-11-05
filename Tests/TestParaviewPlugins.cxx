@@ -48,20 +48,20 @@ void TestParaviewPlugins::testNothing(void)
 
 void TestParaviewPlugins::testShowCVs(void)
 {
-  showCVs::showCVs* instance= showCVs::New();
-  CPPUNIT_ASSERT(instance);
+  showCVs* myinstance= showCVs::New();
+  CPPUNIT_ASSERT(myinstance);
 }
 
 void TestParaviewPlugins::testGMSHreader(void)
 {
-  GMSHreader::GMSHreader* instance= GMSHreader::New();
-  CPPUNIT_ASSERT(instance);
+  GMSHreader* myinstance= GMSHreader::New();
+  CPPUNIT_ASSERT(myinstance);
 }
 
 void TestParaviewPlugins::testGMSHwriter(void)
 {
-  GMSHwriter::GMSHwriter* instance= GMSHwriter::New();
-  CPPUNIT_ASSERT(instance);
+  GMSHwriter* myinstance = GMSHwriter::New();
+  CPPUNIT_ASSERT(myinstance);
 }
 
 
