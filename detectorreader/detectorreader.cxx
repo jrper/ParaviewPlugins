@@ -60,7 +60,7 @@ detectorreader::~detectorreader(){
 int add_field(xmlAttribute * a_node,struct columnData& field)
 {
     xmlAttribute *cur_node = NULL;
-    std::string columnName="";
+    //    std::string columnName="";
  
     for (cur_node = a_node; cur_node; cur_node = (xmlAttribute *)cur_node->next) {
         if (cur_node->type == XML_ATTRIBUTE_NODE) {
@@ -91,7 +91,7 @@ int add_field(xmlAttribute * a_node,struct columnData& field)
 int check_format(xmlAttribute * a_node,int& isBinary)
 {
     xmlAttribute *cur_node = NULL;
-    std::string columnName="";
+    //    std::string columnName="";
 
     int flag=0;
  

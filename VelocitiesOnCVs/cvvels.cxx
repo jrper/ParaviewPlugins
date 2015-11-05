@@ -45,7 +45,7 @@ int cvvels::RequestData(
   vtkInformation* outInfo=outputVector->GetInformationObject(0);
   vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
   
-  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
+  //  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
   vtkUnstructuredGrid* input= vtkUnstructuredGrid::GetData(inputVector[0]);
 
   vtkIdType NC=input->GetNumberOfCells();
@@ -524,12 +524,12 @@ int cvvels::RequestData(
 	   }
 
 	 }
-       	   vtkIdType NFF=cell->GetNumberOfFaces();
-
-	   for (vtkIdType k=0;k<NFF;k++)
-	     {
-	       vtkCell* face=cell->GetFace(k);
-	     }
+       //       	   vtkIdType NFF=cell->GetNumberOfFaces();
+       //
+       //	   for (vtkIdType k=0;k<NFF;k++)
+       //	     {
+       //	       vtkCell* face=cell->GetFace(k);
+       //	     }
 
 
 	   //	   output->InsertNextCell(VTK_QUAD,

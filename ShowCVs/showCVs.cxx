@@ -49,7 +49,7 @@ int showCVs::RequestData(
   vtkInformation* outInfo=outputVector->GetInformationObject(0);
   vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
   
-  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
+  //  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
   vtkUnstructuredGrid* input= vtkUnstructuredGrid::GetData(inputVector[0]);
 
   vtkIdType NC=input->GetNumberOfCells();
@@ -495,12 +495,12 @@ int showCVs::RequestData(
 
 	
 
-	  vtkIdType NFF=cell->GetNumberOfFaces();
+	  //	  vtkIdType NFF=cell->GetNumberOfFaces();
 
-	  for (vtkIdType k=0;k<NFF;k++)
-	    {
-	      vtkCell* face=cell->GetFace(k);
-	    }
+	  //	  for (vtkIdType k=0;k<NFF;k++)
+	  //  {
+	      //	      vtkCell* face=cell->GetFace(k);
+	  //  }
 
 
 	   //	   output->InsertNextCell(VTK_QUAD,
@@ -859,7 +859,7 @@ for (vtkIdType j=0; j<3;j++)
 		    //				  << input->GetCell(cellNeighbours->GetId(neigh))->GetPointIds()->GetId(1) << " "
 		    //		  << input->GetCell(cellNeighbours->GetId(neigh))->GetPointIds()->GetId(2)  << " " 
 		    //		  << edge->GetPointIds()->IsId(i) );
-		    if ( (ntest>=0) &( (visited->IsId(ntest)<0||(visited->IsId(ntest)==0&j==M))))
+		    if ( (ntest>=0) && ( (visited->IsId(ntest)<0 || (visited->IsId(ntest)==0 && j==M))))
 		      {
 			//	vtkDebugMacro(<< "Accepted");
 			polygon->GetPointIds()->InsertNextId(mymap[vtkPair(cell,cellIds->GetId(ntest))]);	

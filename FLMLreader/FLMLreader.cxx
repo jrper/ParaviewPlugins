@@ -181,7 +181,7 @@ gr->Update();
 
     vtkDebugMacro(<<"BCs");
    
-    if (id2bc.size()>0) {
+    if (!id2bc.empty()) {
       for (int k=0;k<output1->GetNumberOfBlocks();k++){
 	vtkUnstructuredGrid* ug_part= vtkUnstructuredGrid::SafeDownCast(output1->GetBlock(k));
 	int id=ug_part->GetCellData()->GetArray("PhysicalIds")->GetTuple1(0);
