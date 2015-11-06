@@ -1,4 +1,4 @@
-#include "showCVs.h"
+#include "vtkShowCVs.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -23,11 +23,11 @@
 
 
 
-vtkCxxRevisionMacro(showCVs, "$Revision: 0.0$");
-vtkStandardNewMacro(showCVs);
+vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.0$");
+vtkStandardNewMacro(vtkShowCVs);
 
-showCVs::showCVs(){};
-showCVs::~showCVs(){};
+vtkShowCVs::vtkShowCVs(){};
+vtkShowCVs::~vtkShowCVs(){};
 
 //vtkQuad* test::make_quad(
 //			 vtkIdlist* pts,
@@ -41,7 +41,7 @@ showCVs::~showCVs(){};
 //  return quadIds
 //}
 
-int showCVs::RequestData(
+int vtkShowCVs::RequestData(
 		      vtkInformation* vtkNotUsed(request),
 		      vtkInformationVector **inputVector,
 		      vtkInformationVector* outputVector )
@@ -889,7 +889,7 @@ for (vtkIdType j=0; j<3;j++)
   return 1;
 }
 
-int showCVs::RequestUpdateExtent(
+int vtkShowCVs::RequestUpdateExtent(
 			  vtkInformation* request,
 			  vtkInformationVector** inputVector,
 			  vtkInformationVector* outputVector)
@@ -925,7 +925,7 @@ int showCVs::RequestUpdateExtent(
 };
 
 
-int showCVs::FillInputPortInformation(int,vtkInformation *info)
+int vtkShowCVs::FillInputPortInformation(int,vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(),"vtkUnstructuredGrid");
   return 1;

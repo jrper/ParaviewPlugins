@@ -3,15 +3,15 @@
 #include "vtkUnstructuredGridAlgorithm.h"
 #include "vtkSetGet.h"
 
-class showCVs : public vtkUnstructuredGridAlgorithm
+class vtkShowCVs : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static showCVs* New();
-  vtkTypeRevisionMacro(showCVs,vtkUnstructuredGridAlgorithm);
+  static vtkShowCVs* New();
+  vtkTypeRevisionMacro(vtkShowCVs,vtkUnstructuredGridAlgorithm);
  protected:
 
-  showCVs();
-  ~showCVs();
+  vtkShowCVs();
+  ~vtkShowCVs();
 
   virtual int RequestData(
 			  vtkInformation* request,
