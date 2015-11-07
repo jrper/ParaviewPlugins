@@ -1,4 +1,4 @@
-#include "GMSHreader.h"
+#include "vtkGmshReader.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -31,15 +31,15 @@ void endswap(T *objp)
   std::reverse(memp, memp + sizeof(T));
 }
 
-vtkCxxRevisionMacro(GMSHreader, "$Revision: 0.0$");
-vtkStandardNewMacro(GMSHreader);
+vtkCxxRevisionMacro(vtkGmshReader, "$Revision: 0.0$");
+vtkStandardNewMacro(vtkGmshReader);
 
-GMSHreader::GMSHreader(){
+vtkGmshReader::vtkGmshReader(){
   this->FileName=NULL;
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(1);
 };
-GMSHreader::~GMSHreader(){
+vtkGmshReader::~vtkGmshReader(){
  this->SetFileName(0);
 };
 
@@ -243,7 +243,7 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
   return 1;
 }
 
-int GMSHreader::RequestData(
+int vtkGmshReader::RequestData(
 		      vtkInformation* vtkNotUsed(request),
 		      vtkInformationVector **inputVector,
 		      vtkInformationVector* outputVector )
@@ -282,7 +282,7 @@ int GMSHreader::RequestData(
   return 1;
 }
 
-void GMSHreader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkGmshReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
  

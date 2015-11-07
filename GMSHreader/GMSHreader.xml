@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="sources">
-    <SourceProxy name="GMSHreader" class="GMSHreader" label="GMSHreader">
+    <SourceProxy name="vtkGmshReader" class="vtkGmshReader" label="vtkGmshReader">
       <Documentation long_help="Read a GMSH .msh file." short_help="Read and display a GMSH .msh file, with tag information.">
       </Documentation>
       <StringVectorProperty name="FileName" 
