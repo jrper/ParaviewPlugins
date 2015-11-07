@@ -1,4 +1,4 @@
-#include "GMSHwriter.h"
+#include "vtkGmshWriter.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -23,25 +23,25 @@
 #include <map>
 #include <algorithm>
 
-vtkCxxRevisionMacro(GMSHwriter, "$Revision: 0.0$");
-vtkStandardNewMacro(GMSHwriter);
+vtkCxxRevisionMacro(vtkGmshWriter, "$Revision: 0.0$");
+vtkStandardNewMacro(vtkGmshWriter);
 
-GMSHwriter::GMSHwriter(){
+vtkGmshWriter::vtkGmshWriter(){
   this->FileName=NULL;
   this->isBinary=1;
   this->SetNumberOfInputPorts(1);
   this->SetNumberOfOutputPorts(0);
 };
-GMSHwriter::~GMSHwriter(){
+vtkGmshWriter::~vtkGmshWriter(){
  this->SetFileName(0);
 };
-void GMSHwriter::SetBinaryWriteMode(int isBinary){
+void vtkGmshWriter::SetBinaryWriteMode(int isBinary){
   this->DebugOn();
   vtkDebugMacro("isBinary"<<isBinary);
   this->isBinary=isBinary;
 };
 
-void GMSHwriter::WriteData()
+void vtkGmshWriter::WriteData()
 {
   vtkUnstructuredGrid *input= vtkUnstructuredGrid::SafeDownCast(
     this->GetInput());
@@ -130,23 +130,23 @@ void GMSHwriter::WriteData()
   return;
 }
 
-int GMSHwriter::FillInputPortInformation(int,vtkInformation *info)
+int vtkGmshWriter::FillInputPortInformation(int,vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(),"vtkUnstructuredGrid");
   return 1;
 }
 
-vtkUnstructuredGrid* GMSHwriter::GetInput()
+vtkUnstructuredGrid* vtkGmshWriter::GetInput()
 {
   return vtkUnstructuredGrid::SafeDownCast(this->Superclass::GetInput());
 }
 
-vtkUnstructuredGrid* GMSHwriter::GetInput(int port)
+vtkUnstructuredGrid* vtkGmshWriter::GetInput(int port)
 {
   return vtkUnstructuredGrid::SafeDownCast(this->Superclass::GetInput(port));
 }
 
-void GMSHwriter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkGmshWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
  

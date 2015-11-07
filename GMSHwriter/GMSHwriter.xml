@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="writers">
-    <WriterProxy name="GMSHwriter" class="GMSHwriter" label="GMSHwrtier">
+    <WriterProxy name="vtkGmshWriter" class="vtkGmshWriter" label="vtkGMSHwriter">
       <Documentation long_help="Write the underlying unstructured grid to a GMSH .msh file." short_help="Save model as a GMSH .msh file.">
       </Documentation>
       <InputProperty name="Input" command="SetInputConnection">

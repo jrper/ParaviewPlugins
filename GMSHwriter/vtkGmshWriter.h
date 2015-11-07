@@ -1,11 +1,11 @@
 #include "vtkDataWriter.h"
 #include "vtkUnstructuredGrid.h"
 
-class GMSHwriter : public vtkDataWriter
+class vtkGmshWriter : public vtkDataWriter
 {
 public:
-  static GMSHwriter *New();
-  vtkTypeMacro(GMSHwriter,vtkDataWriter);
+  static vtkGmshWriter *New();
+  vtkTypeRevisionMacro(vtkGmshWriter,vtkDataWriter);
   vtkSetStringMacro(FileName);
   vtkGetStringMacro(FileName);
 
@@ -19,8 +19,8 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
  protected:
 
-  GMSHwriter();
-  ~GMSHwriter();
+  vtkGmshWriter();
+  ~vtkGmshWriter();
 
   void WriteData();
 
@@ -29,8 +29,8 @@ public:
   char* FileName;
   int isBinary;
  private:
-  GMSHwriter(const GMSHwriter&);  // Not implemented.
-  void operator=(const GMSHwriter&);  // Not implemented.
+  vtkGmshWriter(const vtkGmshWriter&);  // Not implemented.
+  void operator=(const vtkGmshWriter&);  // Not implemented.
 
 };
 

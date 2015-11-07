@@ -1,9 +1,13 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ../ShowCVs)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ../ShowCVs ../GMSHreader ../GMSHwriter)
 
-project(vtk_plugins)
+project(vtkPlugins)
 
 set(FILE_SRCS 
-   ../ShowCVs/vtkShowCVs.cxx ../ShowCVs/vtkShowCVs.h)
+   ../GMSHwriter/vtkGmshWriter.cxx
+   ../ShowCVs/vtkShowCVs.cxx
+   ../GMSHreader/vtkGmshreader.cxx
+)
+ 
     
 cmake_minimum_required(VERSION 2.8.8)
 
@@ -28,27 +32,27 @@ set(VTK_MODULES_USED vtkCommon vtkFiltering vtkIO vtkGraphics)
 link_directories(${VTK_DIR})
 include_directories("${PYTHON_INCLUDE_DIRS}")
 
-add_library(vtk_plugins SHARED ${FILE_SRCS})
-target_link_libraries(vtk_plugins ${vtk_libs})
+add_library(vtkPlugins SHARED ${FILE_SRCS})
+target_link_libraries(vtkPlugins ${vtk_libs})
 
 # Generate wrapper code
-vtk_wrap_python3(vtk_pluginsPython vtk_pluginsPython_SRCS ${FILE_SRCS})
+vtk_wrap_python3(vtkPluginsPython vtkPluginsPython_SRCS "${FILE_SRCS}")
     
-add_library(vtk_pluginsPythonD ${vtk_pluginsPython_SRCS})
-target_link_libraries(vtk_pluginsPythonD  vtk_plugins)   
+add_library(vtkPluginsPythonD ${vtkPluginsPython_SRCS})
+target_link_libraries(vtkPluginsPythonD  vtkPlugins)   
     
-#target_link_libraries(vtk_pluginsPythonD         
+#target_link_libraries(vtkPluginsPythonD         
 #    ${VTK_LIBRARIES}
 #    vtkPythonCore 
 #    ${VTK_PYTHON_LIBRARIES} ${PYTHON_LIBRARY})
     
-add_library(vtk_pluginsPython MODULE ${vtk_pluginsPython_SRCS} vtk_pluginsPythonInit.cxx)
+add_library(vtkPluginsPython MODULE ${vtkPluginsPython_SRCS} vtkPluginsPythonInit.cxx)
     
 set(VTK_PYTHOND_LIBS)
 foreach(TMP_LIB ${VTK_MODULES_USED})
      set(VTK_PYTHOND_LIBS ${VTK_PYTHOND_LIBS} ${TMP_LIB}PythonD)
 endforeach()    
     
-target_link_libraries(vtk_pluginsPython vtk_pluginsPythonD ${VTK_PYTHOND_LIBS})
+target_link_libraries(vtkPluginsPython vtkPluginsPythonD ${VTK_PYTHOND_LIBS})
 
-set_target_properties(vtk_pluginsPython PROPERTIES PREFIX "")
+set_target_properties(vtkPluginsPython PROPERTIES PREFIX "")
