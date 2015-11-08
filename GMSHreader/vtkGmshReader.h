@@ -1,5 +1,3 @@
-#include "vtkDataObjectAlgorithm.h"
-
 #include "vtkUnstructuredGridAlgorithm.h"
 #include "vtkSetGet.h"
 
