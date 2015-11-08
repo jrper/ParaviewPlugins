@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="filters">
-    <SourceProxy name="SplitBcs" class="SplitBcs" label="Extract Boundary">
+    <SourceProxy name="vtkSplitBcs" class="vtkSplitBcs" label="Extract Boundary">
       <Documentation long_help="Extract lower dimensional cells from unstructured grid data" short_help="Extract Boundary">
       </Documentation>
       <InputProperty

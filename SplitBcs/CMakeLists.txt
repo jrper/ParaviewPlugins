@@ -13,5 +13,5 @@ INCLUDE(${PARAVIEW_USE_FILE})
 ADD_PARAVIEW_PLUGIN(
   SplitBcs "0.0"
   SERVER_MANAGER_XML SplitBcs.xml
-  SERVER_MANAGER_SOURCES SplitBcs.h SplitBcs.cxx
+  SERVER_MANAGER_SOURCES vtkSplitBcs.h vtkSplitBcs.cxx
   )

@@ -1,15 +1,15 @@
 #include "vtkUnstructuredGridAlgorithm.h"
 
-class SplitBcs : public vtkUnstructuredGridAlgorithm
+class vtkSplitBcs : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static SplitBcs *New();
-  vtkTypeRevisionMacro(SplitBcs,vtkUnstructuredGridAlgorithm);
+  static vtkSplitBcs *New();
+  vtkTypeRevisionMacro(vtkSplitBcs,vtkUnstructuredGridAlgorithm);
 
  protected:
 
-  SplitBcs();
-  ~SplitBcs();
+  vtkSplitBcs();
+  ~vtkSplitBcs();
 
   virtual int RequestData(
 			  vtkInformation* request,

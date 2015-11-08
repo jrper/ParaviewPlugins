@@ -1,11 +1,12 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ../ShowCVs ../GMSHreader ../GMSHwriter)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ../ShowCVs ../GMSHreader ../GMSHwriter ../SplitBcs)
 
 project(vtkPlugins)
 
 set(FILE_SRCS 
    ../GMSHwriter/vtkGmshWriter.cxx
    ../ShowCVs/vtkShowCVs.cxx
-   ../GMSHreader/vtkGmshreader.cxx
+   ../GMSHreader/vtkGmshReader.cxx
+   ../SplitBcs/vtkSplitBcs.cxx
 )
  
     

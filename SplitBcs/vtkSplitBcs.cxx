@@ -1,4 +1,4 @@
-#include "SplitBcs.h"
+#include "vtkSplitBcs.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -26,16 +26,16 @@
 
 
 
-vtkCxxRevisionMacro(SplitBcs, "$Revision: 0.0$");
-vtkStandardNewMacro(SplitBcs);
+vtkCxxRevisionMacro(vtkSplitBcs, "$Revision: 0.0$");
+vtkStandardNewMacro(vtkSplitBcs);
 
-SplitBcs::SplitBcs(){
+vtkSplitBcs::vtkSplitBcs(){
   this->SetNumberOfInputPorts(1);
   this->SetNumberOfOutputPorts(2);
 };
-SplitBcs::~SplitBcs(){};
+vtkSplitBcs::~vtkSplitBcs(){};
 
-int SplitBcs::RequestData(
+int vtkSplitBcs::RequestData(
 		      vtkInformation* vtkNotUsed(request),
 		      vtkInformationVector **inputVector,
 		      vtkInformationVector* outputVector )
@@ -102,7 +102,7 @@ outpoints1->DeepCopy(input->GetPoints());
   return 1;
 }
 
-int SplitBcs::RequestUpdateExtent(
+int vtkSplitBcs::RequestUpdateExtent(
 			  vtkInformation* request,
 			  vtkInformationVector** inputVector,
 			  vtkInformationVector* outputVector)
@@ -138,7 +138,7 @@ int SplitBcs::RequestUpdateExtent(
 };
 
 
-int SplitBcs::FillInputPortInformation(int,vtkInformation *info)
+int vtkSplitBcs::FillInputPortInformation(int,vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(),"vtkUnstructuredGrid");
   return 1;
