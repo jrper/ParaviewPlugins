@@ -221,6 +221,18 @@ int readGMSHelements(std::ifstream& GMSHfile,vtkUnstructuredGrid* output,int isB
 	    output->InsertNextCell((int)5,(vtkIdType)3,cellPointsVTK);
 	    break;
 	  }
+	case 3:
+	  // Triangle
+	  {
+	    int cellPoints[4];
+	    vtkIdType cellPointsVTK[4];
+	    GMSHfile>> cellPoints[0] >> cellPoints[1] >> cellPoints[2] >> cellPoints[3];
+	    for(int j=0;j<4;j++){
+	      cellPointsVTK[j]=nodeMap[cellPoints[j]];
+	    }
+	    output->InsertNextCell((int)9,(vtkIdType)4,cellPointsVTK);
+	    break;
+	  }
 	case 4:
 	  // Tetrahedron
 	  {
@@ -256,7 +268,9 @@ int vtkGmshReader::RequestData(
   ifstream GMSHfile;
   GMSHfile.open(this->FileName);
 
+#ifndef NDEBUG.
   this->DebugOn();
+#endif
 
   float version=-66666;
   int isBinary=-66666;
