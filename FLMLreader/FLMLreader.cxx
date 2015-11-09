@@ -1,7 +1,7 @@
 #include "FLMLreader.h"
 
-#include "GMSHreader.h"
-#include "SplitBcs.h"
+#include "vtkGmshreader.h"
+#include "vtkSplitBcs.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -88,7 +88,7 @@ fname=fname+(".msh");
 
 vtkDebugMacro(<<fname);
 
-GMSHreader* gr =  GMSHreader::New();
+vtkGmshReader* gr =  vtkGmshReader::New();
 
 gr->SetFileName(fname.c_str());
 
@@ -96,7 +96,7 @@ vtkDebugMacro(<<"File name set");
 
 gr->Update();
 
- SplitBcs* bcs = SplitBcs::New();
+ vtkSplitBcs* bcs = vtkSplitBcs::New();
 
  bcs->SetInputConnection(gr->GetOutputPort());
  bcs->Update();
