@@ -1,6 +1,6 @@
 #include "FLMLreader.h"
 
-#include "vtkGmshreader.h"
+#include "vtkGmshReader.h"
 #include "vtkSplitBcs.h"
 
 #include "vtkInformation.h"

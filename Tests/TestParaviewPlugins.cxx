@@ -13,8 +13,8 @@
 #include <cppunit/XmlOutputter.h>
 
 #include "../ShowCVs/vtkShowCVs.h"
-#include "../GMSHreader/vtkGmshreader.h"
-#include "../GMSHwriter/vtkGmshwriter.h"
+#include "../GMSHreader/vtkGmshReader.h"
+#include "../GMSHwriter/vtkGmshWriter.h"
 
 using namespace CppUnit;
 

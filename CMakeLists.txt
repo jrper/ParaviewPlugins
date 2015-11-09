@@ -8,8 +8,12 @@ set(CMAKE_MACOSX_RPATH 1)
 
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
+link_directories(${ParaView_LIB_DIR})
 
-include_directories(${CPPUNIT_INC})
+
+FIND_PACKAGE( PkgConfig REQUIRED)
+pkg_search_module(CPPUNIT cppunit)
+include_directories(${ParaView_INCLUDE_DIRS} ${CPPUNIT_INCLUDE_DIRS})
 
 file(MAKE_DIRECTORY plugins)
 

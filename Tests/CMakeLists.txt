@@ -4,7 +4,7 @@
 
 FIND_PACKAGE( PkgConfig REQUIRED)
 
-INCLUDE(${PARAVIEW_USE_FILE})
+FIND_PACKAGE(ParaView REQUIRED)
 
 add_executable(test-paraview-plugins EXCLUDE_FROM_ALL TestParaviewPlugins.cxx
   ../ShowCVs/vtkShowCVs.cxx)
@@ -12,22 +12,18 @@ add_executable(test-paraview-plugins EXCLUDE_FROM_ALL TestParaviewPlugins.cxx
 cmake_minimum_required(VERSION 2.8)
 
 pkg_search_module(CPPUNIT cppunit)
+FIND_LIBRARY(CPPUNIT_LIB cppunit)
 
-link_directories(../plugins)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../showCVs ${CMAKE_CURRENT_SOURCE_DIR}/../GMSHReaser ${CMAKE_CURRENT_SOURCE_DIR}/../GmshWRiter ${ParaView_LIB_DIR})
 include_directories(${CPPUNIT_INCLUDE_DIRS} ${VTK_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(vtk_libs
-    vtkCommon
-    vtkFiltering
-    vtkIO
-    vtkGraphics)
+ADD_TEST(NAME test-paraview-plugins COMMAND "${PROJECT_OUTPUT_TEST_DIR}/test-paraview-plugins")
 
 target_link_libraries(
     test-paraview-plugins
     ${CPPUNIT_LIB}
     ${CMAKE_DL_LIBS}
-    ${VTK_LIBS}
     showCVs
     GMSHreader GMSHwriter
 )
-ADD_TEST(NAME test-paraview-plugins COMMAND "${PROJECT_OUTPUT_TEST_DIR}/test-paraview-plugins")
+
