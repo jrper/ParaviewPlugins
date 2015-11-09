@@ -12,9 +12,9 @@
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/XmlOutputter.h>
 
-#include "../ShowCVs/showCVs.h"
-#include "../GMSHreader/GMSHreader.h"
-#include "../GMSHwriter/GMSHwriter.h"
+#include "../ShowCVs/vtkShowCVs.h"
+#include "../GMSHreader/vtkGmshreader.h"
+#include "../GMSHwriter/vtkGmshwriter.h"
 
 using namespace CppUnit;
 
@@ -26,6 +26,7 @@ class TestParaviewPlugins : public CppUnit::TestFixture
   CPPUNIT_TEST(testGMSHreader);
   CPPUNIT_TEST(testGMSHwriter);
   CPPUNIT_TEST_SUITE_END();
+
 
 public:
   void setUp(void);
@@ -48,19 +49,24 @@ void TestParaviewPlugins::testNothing(void)
 
 void TestParaviewPlugins::testShowCVs(void)
 {
-  showCVs* myinstance= showCVs::New();
+  vtkShowCVs* myinstance= vtkShowCVs::New();
   CPPUNIT_ASSERT(myinstance);
 }
 
 void TestParaviewPlugins::testGMSHreader(void)
 {
-  GMSHreader* myinstance= GMSHreader::New();
+  vtkGmshReader* myinstance= vtkGmshReader::New();
   CPPUNIT_ASSERT(myinstance);
+  myinstance->SetFileName("Tests/data/med.msh");
+  myinstance->Update();
+  CPPUNIT_ASSERT(myinstance->GetOutput()->GetNumberOfPoints() == 6940);
+  CPPUNIT_ASSERT(myinstance->GetOutput()->GetNumberOfCells() == 8398);
+  CPPUNIT_ASSERT(myinstance->GetOutput());
 }
 
 void TestParaviewPlugins::testGMSHwriter(void)
 {
-  GMSHwriter* myinstance = GMSHwriter::New();
+  vtkGmshWriter* myinstance = vtkGmshWriter::New();
   CPPUNIT_ASSERT(myinstance);
 }
 
