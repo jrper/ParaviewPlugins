@@ -11,5 +11,5 @@ INCLUDE(${PARAVIEW_USE_FILE})
 ADD_PARAVIEW_PLUGIN(
   cvvels "0.0"
   SERVER_MANAGER_XML CVvels.xml
-  SERVER_MANAGER_SOURCES cvvels.h cvvels.cxx
+  SERVER_MANAGER_SOURCES vtkCVVelocities.h vtkCVVelocities.cxx
   )

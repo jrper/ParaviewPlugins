@@ -1,15 +1,15 @@
 #include "vtkUnstructuredGridAlgorithm.h"
 #include "vtkSetGet.h"
 
-class cvvels : public vtkUnstructuredGridAlgorithm
+class vtkCVVelocities : public vtkUnstructuredGridAlgorithm
 {
 public:
-  static cvvels* New();
-  vtkTypeRevisionMacro(cvvels,vtkUnstructuredGridAlgorithm);
+  static vtkCVVelocities* New();
+  vtkTypeRevisionMacro(vtkCVVelocities,vtkUnstructuredGridAlgorithm);
  protected:
 
-  cvvels();
-  ~cvvels();
+  vtkCVVelocities();
+  ~vtkCVVelocities();
 
   virtual int RequestData(
 			  vtkInformation* request,

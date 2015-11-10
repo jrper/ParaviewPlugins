@@ -1,6 +1,6 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="filters">
-    <SourceProxy name="cvvels" class="cvvels" label="Velocities on CV Faces">
+    <SourceProxy name="vtkCVVelocities" class="vtkCVVelocities" label="Velocities on CV Faces">
       <Documentation long_help="Plot pointwise velocity on midpoints of Control Volume faces" short_help="Plot CV Vels">
       </Documentation>
       <InputProperty

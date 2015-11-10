@@ -1,4 +1,4 @@
-#include "cvvels.h"
+#include "vtkCVVelocities.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -19,13 +19,13 @@
 #include "vtkPolygon.h"
 #include "vtkHexahedron.h"
 
-vtkCxxRevisionMacro(cvvels, "$Revision: 0.0$");
-vtkStandardNewMacro(cvvels);
+vtkCxxRevisionMacro(vtkCVVelocities, "$Revision: 0.0$");
+vtkStandardNewMacro(vtkCVVelocities);
 
-cvvels::cvvels(){};
-cvvels::~cvvels(){};
+vtkCVVelocities::vtkCVVelocities(){};
+vtkCVVelocities::~vtkCVVelocities(){};
 
-//vtkQuad* cvvels::make_quad(
+//vtkQuad* vtkCVVelocities::make_quad(
 //			 vtkIdlist* pts,
 //			 vtkIdType[4] a)
 //{ vtkQuad* newQuad=vtkUnstructuredGrid::Quad::New();
@@ -37,7 +37,7 @@ cvvels::~cvvels(){};
 //  return quadIds
 //}
 
-int cvvels::RequestData(
+int vtkCVVelocities::RequestData(
 		      vtkInformation* vtkNotUsed(request),
 		      vtkInformationVector **inputVector,
 		      vtkInformationVector* outputVector )
@@ -549,7 +549,7 @@ int cvvels::RequestData(
   return 1;
 }
 
-int cvvels::RequestUpdateExtent(
+int vtkCVVelocities::RequestUpdateExtent(
 			  vtkInformation* request,
 			  vtkInformationVector** inputVector,
 			  vtkInformationVector* outputVector)
@@ -585,7 +585,7 @@ int cvvels::RequestUpdateExtent(
 };
 
 
-int cvvels::FillInputPortInformation(int,vtkInformation *info)
+int vtkCVVelocities::FillInputPortInformation(int,vtkInformation *info)
 {
   info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(),"vtkUnstructuredGrid");
   return 1;
