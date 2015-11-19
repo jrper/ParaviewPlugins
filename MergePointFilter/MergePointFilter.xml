@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="vtkMergePointFilter" class="vtkMergePointFilter" label="Merge colocated points">
+      <Documentation long_help="Merge data at colocated points. The choice of source for point data from a discontinuos mesh is chosen based on the numbering, but is functionally random.">
+      </Documentation>
+      <InputProperty
+	  name="Input"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
