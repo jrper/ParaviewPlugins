@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8.8)
 
+include_directories(..//MergePointFilter)
+
 if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
@@ -13,3 +15,5 @@ ADD_PARAVIEW_PLUGIN(
   SERVER_MANAGER_XML showCVs.xml
   SERVER_MANAGER_SOURCES vtkShowCVs.h vtkShowCVs.cxx
   )
+
+TARGET_LINK_LIBRARIES(showCVs MergePointFilter)

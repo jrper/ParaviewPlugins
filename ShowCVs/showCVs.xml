@@ -14,6 +14,12 @@
 	  <DataType value="vtkUnstructuredGrid"/>
 	</DataTypeDomain>
       </InputProperty>
+      <IntVectorProperty name="MergeToContinuous"
+                     command="SetMergeToContinuous"
+                     number_of_elements="1"
+                     default_values="0">
+	<BooleanDomain name="bool"/>
+      </IntVectorProperty>
     </SourceProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>

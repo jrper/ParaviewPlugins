@@ -8,10 +8,15 @@ class vtkShowCVs : public vtkUnstructuredGridAlgorithm
 public:
   static vtkShowCVs* New();
   vtkTypeRevisionMacro(vtkShowCVs,vtkUnstructuredGridAlgorithm);
+
+  void SetMergeToContinuous(int value);
+
  protected:
 
   vtkShowCVs();
   ~vtkShowCVs();
+
+  int mergeToContinuous;
 
   virtual int RequestData(
 			  vtkInformation* request,

@@ -18,6 +18,8 @@
 #include "vtkQuad.h"
 #include "vtkHexahedron.h"
 #include "vtkPolygon.h"
+#include "vtkMergePointFilter.h"
+#include "vtkTrivialProducer.h"
 #include <iostream>
 #include <map>
 
@@ -26,20 +28,17 @@
 vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.0$");
 vtkStandardNewMacro(vtkShowCVs);
 
-vtkShowCVs::vtkShowCVs(){};
+vtkShowCVs::vtkShowCVs(){
+#ifndef NDEBUG
+  this->DebugOn();
+#endif
+
+  this->mergeToContinuous=0;};
 vtkShowCVs::~vtkShowCVs(){};
 
-//vtkQuad* test::make_quad(
-//			 vtkIdlist* pts,
-//			 vtkIdType[4] a)
-//{ vtkQuad* newQuad=vtkUnstructuredGrid::Quad::New();
-//  vtkIdList* quadIds=newQuad->GetPointIds();
-//  for (j=0,j<5,j++)
-//    {
-//      quadIds->SetId(j,pts.GetId(a[j]));
-//   }
-//  return quadIds
-//}
+void vtkShowCVs::SetMergeToContinuous(int value){
+  this->mergeToContinuous=value;
+};
 
 int vtkShowCVs::RequestData(
 		      vtkInformation* vtkNotUsed(request),
@@ -52,13 +51,26 @@ int vtkShowCVs::RequestData(
   //  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
   vtkUnstructuredGrid* input= vtkUnstructuredGrid::GetData(inputVector[0]);
 
+
+  vtkSmartPointer<vtkMergePointFilter> mergeFilter= vtkSmartPointer<vtkMergePointFilter>::New();
+
+  if (this->mergeToContinuous) {
+     vtkDebugMacro(<<"Setting input" );
+     mergeFilter->SetInputData(input);
+     vtkDebugMacro(<<"Updating merge point filter. " );
+     mergeFilter->Update();
+     vtkDebugMacro(<<"Getting output. " );
+     input = mergeFilter->GetOutput();
+
+     vtkDebugMacro(<<input->GetNumberOfCells() );
+  }
+
   vtkIdType NC=input->GetNumberOfCells();
   vtkIdType NP=input->GetNumberOfPoints();
   vtkIdType NF;
 
   vtkIdTypeArray* faces;
 
-  this->DebugOff();
   vtkCell* cell=input->GetCell(0);
   int NPointsOut=0;
   int discontinuous=0;
@@ -67,10 +79,10 @@ int vtkShowCVs::RequestData(
 
   if (NC==0)
     {
-      //      vtkDebugMacro(<<"NothingToExtract"<<NC<<NP);
+      vtkDebugMacro(<<"NothingToExtract"<<NC<<NP);
       return 1;
     }  else {
-    //    vtkDebugMacro(<<"Extracting Points" << NC);
+    vtkDebugMacro(<<"Extracting Points" << NC);
   }
 
 
@@ -133,9 +145,9 @@ int vtkShowCVs::RequestData(
       
       for(vtkIdType i = 0;i<NC;i++)
 	{
-	  //vtkDebugMacro(<<"GetCell " << i);
+	  vtkDebugMacro(<<"GetCell " << i);
 	  vtkCell* cell=input->GetCell(i);
-	  //     vtkDebugMacro(<<"Get Points ");
+	  vtkDebugMacro(<<"Get Points ");
 	  vtkPoints* pts=cell->GetPoints();
 	  
 	  vtkIdType NPP=pts->GetNumberOfPoints();
@@ -515,8 +527,6 @@ int vtkShowCVs::RequestData(
 
     } else {
 
-      //      this->DebugOn();
-
       // Continuous, so we build the face positions over cells and then loop over points in the edge mesh: 
 
       vtkSmartPointer<vtkIdList> EdgeList=
@@ -527,7 +537,7 @@ int vtkShowCVs::RequestData(
       std::map<std::pair<vtkIdType,vtkIdType>,vtkIdType> mymap;
       typedef std::pair<vtkIdType,vtkIdType> vtkPair;
 
-      //      vtkDebugMacro(<<"Cell Count" << NC);
+      vtkDebugMacro(<<"Cell Count" << NC);
 
       for(vtkIdType i=0;i<NC;i++)
 	{
