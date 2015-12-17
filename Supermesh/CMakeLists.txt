@@ -7,8 +7,8 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 find_library(JUDY_LIB judy)
-FIND_LIBRARY(SPUD_LIBRARY spud)
-find_library(SPATIAL_INDEX_LIB libspatialindex)
+FIND_LIBRARY(SPUD_LIBRARY spud HINTS ${FLUIDITY_LIB_DIR})
+find_library(SPATIAL_INDEX_LIB spatialindex HINTS ${FLUIDITY_LIB_DIR})
 
 find_library(BLAS_LIB blas)
 find_library(LAPACK_LIB lapack)
@@ -27,7 +27,6 @@ set (CMAKE_Fortran_FLAGS "-ffree-line-length-none -ffixed-line-length-none -fdef
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
 
-find_library(SMFEM supermesh_femtools)
 
 ADD_PARAVIEW_PLUGIN(
   Supermesh "0.0"
@@ -35,6 +34,4 @@ ADD_PARAVIEW_PLUGIN(
   SERVER_MANAGER_SOURCES vtkSupermesh.h vtkSupermesh.cxx vtkFortranSupermesh.F90
   )
 
-add_dependencies(Supermesh supermesh_femtools)
-
-target_link_libraries(Supermesh  ${LAPACK_LIB} ${BLAS_LIB} ${SPUD_LIBRARY} ${SPATIAL_INDEX_LIB} ${JUDY_LIB} ${MPI_LIBRARY} ${MPI_Fortran_LIBRARIES} ${SMFEM})
+target_link_libraries(Supermesh  ${LAPACK_LIB} ${BLAS_LIB} ${SPUD_LIBRARY} ${SPATIAL_INDEX_LIB} ${JUDY_LIB} ${MPI_LIBRARY} ${MPI_Fortran_LIBRARIES} supermesh_femtools)
