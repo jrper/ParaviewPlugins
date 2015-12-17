@@ -6,22 +6,24 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
 
-find_library(JUDY_LIB judy)
+find_library(JUDY_LIB Judy)
 FIND_LIBRARY(SPUD_LIBRARY spud HINTS ${FLUIDITY_LIB_DIR})
 find_library(SPATIAL_INDEX_LIB spatialindex HINTS ${FLUIDITY_LIB_DIR})
 
 find_library(BLAS_LIB blas)
 find_library(LAPACK_LIB lapack)
 FIND_PACKAGE(PETSc REQUIRED)
+FIND_PATH(PETSc_INCLUDE_DIR petscversion.h)
+FIND_PATH(PETSc_PACKAGE_INCLUDE_DIR petscconf.h)
 
 add_subdirectory(supermesh_femtools)
-include_directories(supermesh_femtools ${PETSC_PACKAGE_INCLUDES})
+include_directories(supermesh_femtools ${PETSC_PACKAGE_INCLUDES} ${PETSc_INCLUDE_DIR} ${PETSc_PACKAGE_INCLUDE_DIR} )
 
 FIND_PACKAGE(MPI REQUIRED)
 include (CMakeForceCompiler)
 CMAKE_FORCE_Fortran_COMPILER(mpif90 ${CMAKE_Fortran_COMPILER_ID})
 
-set (CMAKE_Fortran_FLAGS "-ffree-line-length-none -ffixed-line-length-none -fdefault-real-8 -fdefault-double-8 -O2 -frecord-marker=4")
+set (CMAKE_Fortran_FLAGS "-ffree-line-length-none -ffixed-line-length-none -fdefault-real-8 -fdefault-double-8 -O2 -frecord-marker=4 -fPIC")
 
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
