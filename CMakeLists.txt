@@ -29,6 +29,7 @@ add_subdirectory(TemporalDataReaders)
 add_subdirectory(detectorreader)
 add_subdirectory(statreader)
 add_subdirectory(MergePointFilter)
+add_subdirectory(Supermesh)
 add_subdirectory(Tests)
 
 
