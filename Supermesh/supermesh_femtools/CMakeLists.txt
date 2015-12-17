@@ -11,7 +11,7 @@ find_library(JUDY_LIB judy)
 FIND_LIBRARY(SPUD_LIBRARY spud)
 find_library(SPATIAL_INDEX_LIB libspatialindex)
 
-FIND_PACKAGE(PETSC REQUIRED)
+FIND_PACKAGE(PETSc REQUIRED)
 
 
 

@@ -12,10 +12,9 @@ find_library(SPATIAL_INDEX_LIB spatialindex HINTS ${FLUIDITY_LIB_DIR})
 
 find_library(BLAS_LIB blas)
 find_library(LAPACK_LIB lapack)
-FIND_PACKAGE(PETSC REQUIRED)
+FIND_PACKAGE(PETSc REQUIRED)
 
 add_subdirectory(supermesh_femtools)
-FIND_PACKAGE(PETSC REQUIRED)
 include_directories(supermesh_femtools ${PETSC_PACKAGE_INCLUDES})
 
 FIND_PACKAGE(MPI REQUIRED)

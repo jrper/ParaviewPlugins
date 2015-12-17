@@ -6,6 +6,8 @@ FIND_PACKAGE( PkgConfig REQUIRED)
 
 FIND_PACKAGE(ParaView REQUIRED)
 
+include_directories(../MergePointFilter ../SplitBcs)
+
 add_executable(test-paraview-plugins EXCLUDE_FROM_ALL TestParaviewPlugins.cxx
   ../ShowCVs/vtkShowCVs.cxx)
 
@@ -24,6 +26,6 @@ target_link_libraries(
     ${CPPUNIT_LIB}
     ${CMAKE_DL_LIBS}
     showCVs
-    GMSHreader GMSHwriter
+    GMSHreader GMSHwriter MergePointFilter
 )
 
