@@ -30,14 +30,12 @@ vtkCxxRevisionMacro(vtkSupermesh, "$Revision: 0.0$");
 vtkStandardNewMacro(vtkSupermesh);
 
 extern"C" {
-  void supermesh(double *x1, int n_x1, vtkIdType *c1, int n_c1,
-		 double *x2, int n_x2, vtkIdType *c2, int n_c2,
-		 int* nNodes, int* nEles, int* nEntries, void* mesh);
-  void supermesh_sp(float *x1, int n_x1, vtkIdType *c1, int n_c1,
-		    float *x2, int n_x2, vtkIdType *c2, int n_c2,
-		    int* nNodes, int* nEles, int* nEntries, void* mesh);
+  void* position_from_vtk_c(double *x1, int n_x1, vtkIdType *c1, int n_c1);
+  void position_from_vtk_c_sp(float *x1, int n_x1, vtkIdType *c1, int n_c1, void** ptr);
+  void supermesh(void* ptr1, void* ptr2,
+		 int* nNodes, int* nEles, int* nEntries, void** context);
   void copy_mesh_to_vtk(void* mesh, double *x,int n_x,  vtkIdType *c,
-			int n_c);
+			int n_c, int* ele_map_0, int* ele_map_1, int nEles);
 }
 
 vtkSupermesh::vtkSupermesh(){
@@ -67,55 +65,73 @@ vtkSmartPointer<vtkCellTypes> cellTypeList= vtkSmartPointer<vtkCellTypes>::New()
 
  vtkSmartPointer<vtkCellArray> output_connectivity= vtkSmartPointer<vtkCellArray>::New();      
 
+#ifndef NDEBUG
  this->DebugOn();
+#endif
 
  vtkDebugMacro(<< input0->GetPoints()->GetDataType() <<" " << input0->GetNumberOfPoints() << " " << input1->GetNumberOfPoints());
  vtkDebugMacro(<< input0->GetNumberOfCells() << " " << input1->GetNumberOfCells());
 
 
  int nNodes, nElements, nEntries;
- void* mesh;
+ void *context, *ptr1, *ptr2;
+
 
  switch(input0->GetPoints()->GetDataType()){
  case VTK_FLOAT:
-   supermesh_sp((float*) input0->GetPoints()->GetData()->GetVoidPointer(0),
+   position_from_vtk_c_sp((float*) input0->GetPoints()->GetData()->GetVoidPointer(0),
 	     input0->GetNumberOfPoints(),
 	     input0->GetCells()->GetPointer(),
-	     input0->GetCells()->GetNumberOfConnectivityEntries(),
-	     (float*) input1->GetPoints()->GetData()->GetVoidPointer(0),
-	     input1->GetNumberOfPoints(),
-	     input1->GetCells()->GetPointer(),
-	     input1->GetCells()->GetNumberOfConnectivityEntries(),
-	     &nNodes,&nElements,&nEntries,mesh);
+			  input0->GetCells()->GetNumberOfConnectivityEntries(),&ptr1);
    break;
  case VTK_DOUBLE:
-   supermesh((double*) input0->GetPoints()->GetData()->GetVoidPointer(0),
+   ptr1 = position_from_vtk_c((double*) input0->GetPoints()->GetData()->GetVoidPointer(0),
 	     input0->GetNumberOfPoints(),
 	     input0->GetCells()->GetPointer(),
-	     input0->GetCells()->GetNumberOfConnectivityEntries(),
-	     (double*) input1->GetPoints()->GetData()->GetVoidPointer(0),
+			      input0->GetCells()->GetNumberOfConnectivityEntries());
+   break;
+ }
+
+ switch(input1->GetPoints()->GetDataType()){
+ case VTK_FLOAT:
+   position_from_vtk_c_sp((float*) input1->GetPoints()->GetData()->GetVoidPointer(0),
+	     input1->GetNumberOfPoints(),	     input1->GetCells()->GetPointer(),
+			  input1->GetCells()->GetNumberOfConnectivityEntries(),&ptr2);
+   break;
+ case VTK_DOUBLE:
+   ptr2 = position_from_vtk_c((double*) input1->GetPoints()->GetData()->GetVoidPointer(0),
 	     input1->GetNumberOfPoints(),
 	     input1->GetCells()->GetPointer(),
-	     input1->GetCells()->GetNumberOfConnectivityEntries(),
-	     &nNodes,&nElements,&nEntries,mesh);
+			      input1->GetCells()->GetNumberOfConnectivityEntries());
    break;
  }
    
+ supermesh( ptr1, ptr2, &nNodes,&nElements,&nEntries,&context);
 
  outpoints0->SetDataTypeToDouble();
  outpoints0->Allocate(nNodes);
  outpoints0->SetNumberOfPoints(nNodes);
  output0->Allocate(nElements);
 
- copy_mesh_to_vtk(mesh,(double*) outpoints0->GetData()->GetVoidPointer(0),
+ vtkSmartPointer<vtkIntArray> ele_map_0= vtkSmartPointer<vtkIntArray>::New();
+ vtkSmartPointer<vtkIntArray> ele_map_1= vtkSmartPointer<vtkIntArray>::New();
+ ele_map_0->SetName("CellId0");
+ ele_map_1->SetName("CellId1");
+
+ copy_mesh_to_vtk(context,(double*) outpoints0->GetData()->GetVoidPointer(0),
 		  nNodes,
 		  output_connectivity->WritePointer(nElements,
 						    nEntries),
-		  nEntries);
+		  nEntries,
+		  (int *) ele_map_0->WriteVoidPointer(0,nElements),
+		  (int *) ele_map_1->WriteVoidPointer(0,nElements),
+		  nElements);
 
 
  output0->SetPoints(outpoints0);
  output0->SetCells(VTK_TRIANGLE,output_connectivity);
+ output0->GetCellData()->AddArray(ele_map_0);
+ output0->GetCellData()->AddArray(ele_map_1);
 
 vtkDebugMacro(<< output0->GetNumberOfCells());
 
