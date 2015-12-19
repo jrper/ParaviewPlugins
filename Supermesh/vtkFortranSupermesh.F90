@@ -26,6 +26,43 @@ module vtkFortranSupermesh
 
 contains
 
+  function vertex_measure(X) result(measure)
+    
+    real, dimension(:,:) :: X
+
+    real :: measure
+
+    select case(size(X,2))
+       case(1)
+          measure=1.0
+       case(2)
+          measure=sqrt(sum((X(:,2)-X(:,1))**2))
+       case(3)
+          measure=abs(cross2( X(:,2)-X(:,1), X(:,3)-X(:,1)))/2.0
+       case(4)
+          measure=dot_product(X(:,2)-X(:,1),cross3(X(:,3)-X(:,1),X(:,4)-X(:,1)))/6.0
+       end select
+
+       contains
+         
+         function cross2(a,b)
+           real, dimension(2) :: a,b
+           real :: cross2
+
+           cross2 = a(1)*b(2)-a(2)*b(1)
+
+         end function cross2
+
+         function cross3(a,b)
+           real, dimension(3) :: a,b
+           real, dimension(3) :: cross3
+
+           cross3(1)=a(2)*b(3)-a(3)*b(2)
+           cross3(2)=a(3)*b(1)-a(1)*b(3)
+           cross3(3)=a(1)*b(2)-a(2)*b(1)
+         end function cross3
+       end function vertex_measure
+
   function get_shape_from_vtk_type(vtk_type) result (shape)
     integer, intent(in) :: vtk_type
     type(element_type) :: shape
@@ -94,19 +131,30 @@ contains
     integer, parameter :: blocksize = 4
     integer :: i, J
 
-    type(vector_field) :: supermesh_tmp
+    type(vector_field) :: supermesh_tmp, supermesh_full
     type(mesh_type) :: supermesh_mesh
     type(vector_field) :: supermesh_accum
     type(inode), pointer :: llnode
 
-    integer :: ele_A, ele_B, ele_C
+    integer :: ele_A, ele_B, ele_C, ele_tmp, ele_size
     integer :: new_start, new_end, step
 
     integer :: nintersections, nintersections_max
     integer, dimension(:), allocatable :: ele_map_A, ele_map_B
+    real, dimension(:), allocatable    :: mass
     integer, dimension(:, :), allocatable :: intersection_parents
     type(vector_field), dimension(:), allocatable :: intersections
-  
+
+!    if (all(map_BA%length==1)) then
+!       supermesh=positionsA
+!       incref(positionsA)
+!    allocate(ele_map_A(ele_size))
+!    allocate(ele_map_B(ele_size))
+!    ele_map_A=
+!    return
+!    end if
+      
+       
 
     nintersections_max = sum(map_BA%length)
     ewrite(2, "(a,i0)") "Maximum number of intersections: ", nintersections_max
@@ -114,9 +162,6 @@ contains
     allocate(intersection_parents(nintersections_max, 2))
     nintersections = 0
 
-    call allocate(supermesh_mesh, 0, 0, supermesh_shape, "AccumulatedMesh")
-    call allocate(supermesh, positionsA%dim, supermesh_mesh, "AccumulatedPositions")
-    call deallocate(supermesh_mesh)
 
     do ele_B=start_ele,end_ele
        llnode => map_BA(ele_B)%firstnode
@@ -133,16 +178,47 @@ contains
           llnode => llnode%next
        end do
     end do
-    
-    supermesh = unify_meshes(intersections(:nintersections))
-    supermesh%name = "Coordinate"
-    
-    allocate(ele_map_A(ele_count(supermesh)))
-    allocate(ele_map_B(ele_count(supermesh)))
 
+
+!    call allocate(supermesh_mesh, 0, 0, supermesh_shape, "AccumulatedMesh")
+!    call allocate(supermesh_tmp, positionsA%dim, supermesh_mesh, "AccumulatedPositions")    
+    supermesh_full = unify_meshes(intersections(:nintersections))
+    allocate(mass(ele_count(supermesh_full)))
+
+    do i =1, ele_count(supermesh_full)
+       mass(i)=vertex_measure(ele_val(supermesh_full,i))
+    end do
+
+    ele_size=count(mass>0.0)
+
+    call allocate(supermesh_mesh, supermesh_shape%loc*ele_size, ele_size, supermesh_shape, "Supermesh")
+    do i =1, ele_size
+       call set_ele_nodes(supermesh_mesh, i, &
+            [((i-1)*supermesh_shape%loc + j,j=1,supermesh_shape%loc)])
+    end do
+
+    call allocate(supermesh, positionsA%dim, supermesh_mesh, "Coordinate")
+    ele_C=0
+    do i =1, ele_count(supermesh_full)
+       if (mass(i)==0.0) cycle
+       ele_C = ele_C + 1
+       call set(supermesh, ele_nodes(supermesh,ele_C), ele_val(supermesh_full,i))
+    end do
+
+    assert(ele_C == ele_size)
+
+    call deallocate(supermesh_full)
+    call deallocate(supermesh_mesh)
+    
+    allocate(ele_map_A(ele_size))
+    allocate(ele_map_B(ele_size))
+
+    ele_tmp=0
     ele_C=0
     do i = 1, nintersections
        do j = 1, ele_count(intersections(i))
+          ele_tmp = ele_tmp + 1
+          if (mass(ele_tmp)==0.0) cycle
           ele_C = ele_C + 1
           ele_map_A(ele_C) = intersection_parents(i, 1)
           ele_map_B(ele_C) = intersection_parents(i, 2)
@@ -253,7 +329,6 @@ subroutine supermesh(ptr1, ptr2, nNodes, nEles,nEntries, context_c) bind(C)
 
   map_BA = rtree_intersection_finder(positionsB, positionsA)
   call intersector_set_dimension(dim)
-  call intersector_set_exactness(.false.)
 
   ! inputs: positionsB, map_BA, positionsA, supermesh_shape
   ! output: the supermesh!
@@ -298,8 +373,8 @@ subroutine copy_mesh_to_vtk(context_c, X, nNodes,C ,nEntries,&
      C((ele-1)*(loc+1)+2:ele*(loc+1))=ele_nodes(data%positions,ele)-1
   end do
   
-  ele_map_0=data%ele_map_A
-  ele_map_1=data%ele_map_B
+  ele_map_0=data%ele_map_A-1
+  ele_map_1=data%ele_map_B-1
 
   call deallocate(data%positions)
   deallocate(data%ele_map_A,data%ele_map_B)

@@ -32,7 +32,9 @@ INCLUDE(${PARAVIEW_USE_FILE})
 ADD_PARAVIEW_PLUGIN(
   Supermesh "0.0"
   SERVER_MANAGER_XML Supermesh.xml
-  SERVER_MANAGER_SOURCES vtkSupermesh.h vtkSupermesh.cxx vtkFortranSupermesh.F90
+  SERVER_MANAGER_SOURCES vtkSupermesh.h vtkSupermesh.cxx
+  			 vtkLinearSupermesh.h vtkLinearSupermesh.cxx
+  			 vtkFortranSupermesh.F90
   )
 
 target_link_libraries(Supermesh  ${LAPACK_LIB} ${BLAS_LIB} ${SPUD_LIBRARY} ${SPATIAL_INDEX_LIB} ${JUDY_LIB} ${MPI_LIBRARY} ${MPI_Fortran_LIBRARIES} supermesh_femtools)

@@ -29,5 +29,38 @@
       </InputProperty>
       
     </SourceProxy>
+    <SourceProxy name="vtkLinearSupermesh" class="vtkLinearSupermesh" label="Linear sum on supermesh">
+      <Documentation long_help="Generate supermesh from unstructured grid data" short_help="Generate Supermesh">
+      </Documentation>
+      <InputProperty
+	  name="Input 1"
+	  port_index="0"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+      <InputProperty
+	  name="Input 2"
+	  port_index="1"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+      <DoubleVectorProperty name="Coefficients"
+                        command="SetCoefficients"
+                        number_of_elements="2"
+                        default_values="1.0 -1.0">
+      </DoubleVectorProperty>
+    </SourceProxy>
   </ProxyGroup>
 </ServerManagerConfiguration>
