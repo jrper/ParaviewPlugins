@@ -8,3 +8,6 @@ FLMLreader : Pull and display the mesh from a .flml file. One day this will init
 detectorreader: Reads the data from a Fluidity .detector file and outputs a vtkPolyData object.
 statreader: Reads a Fluidity .stat file into a vtkTable object.
 SplitBcs : Split high and low dimension data from an unstructured grid containing both, e.g. as produced by the GMSHreader plugin above.
+MergePointsFilter:Map unstructured grids between continuous and discontinuous (also high and low order).
+Supermesh: Use Fluidity femtools library to generate supermesh from a pair of unstructured meshes.
+TemporalDataReaders: Get Fluidity style time data out of files and use for the time level.
