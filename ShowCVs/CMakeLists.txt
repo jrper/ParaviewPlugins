@@ -16,4 +16,4 @@ ADD_PARAVIEW_PLUGIN(
   SERVER_MANAGER_SOURCES vtkShowCVs.h vtkShowCVs.cxx
   )
 
-TARGET_LINK_LIBRARIES(showCVs MergePointFilter)
+TARGET_LINK_LIBRARIES(showCVs ${CMAKE_CURRENT_SOURCE_DIR}/../MergePointFilter/libMergePointFilter.dylib)

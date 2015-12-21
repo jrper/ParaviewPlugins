@@ -14,11 +14,33 @@
 	  <DataType value="vtkUnstructuredGrid"/>
 	</DataTypeDomain>
       </InputProperty>
-      <IntVectorProperty name="MergeToContinuous"
-                     command="SetMergeToContinuous"
-                     number_of_elements="1"
-                     default_values="0">
-	<BooleanDomain name="bool"/>
+      <IntVectorProperty
+          name="Polynomial Degree"
+          command="SetDegree"
+          number_of_elements="1"
+          default_values="-1">
+        <EnumerationDomain name="enum">
+          <Entry value="-1" text="Unchanged"/>
+          <Entry value="1" text="Linear"/>
+          <Entry value="2" text="Quadratic"/>
+        </EnumerationDomain>
+        <Documentation>
+          Set the degree of the output grid.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+          name="Continuity"
+          command="SetContinuity"
+          number_of_elements="1"
+          default_values="0">
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="Unchanged"/>
+          <Entry value="-1" text="Discontinuous"/>
+          <Entry value="1" text="Continuous"/>
+        </EnumerationDomain>
+        <Documentation>
+          Set the continuity of the output grid.
+        </Documentation>
       </IntVectorProperty>
     </SourceProxy>
   </ProxyGroup>

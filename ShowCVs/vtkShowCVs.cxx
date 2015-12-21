@@ -32,13 +32,10 @@ vtkShowCVs::vtkShowCVs(){
 #ifndef NDEBUG
   this->DebugOn();
 #endif
-
-  this->mergeToContinuous=0;};
+  this->Degree=-1;
+  this->Continuity=0;
+}
 vtkShowCVs::~vtkShowCVs(){};
-
-void vtkShowCVs::SetMergeToContinuous(int value){
-  this->mergeToContinuous=value;
-};
 
 int vtkShowCVs::RequestData(
 		      vtkInformation* vtkNotUsed(request),
@@ -54,16 +51,18 @@ int vtkShowCVs::RequestData(
 
   vtkSmartPointer<vtkMergePointFilter> mergeFilter= vtkSmartPointer<vtkMergePointFilter>::New();
 
-  if (this->mergeToContinuous) {
-     vtkDebugMacro(<<"Setting input" );
-     mergeFilter->SetInputData(input);
-     vtkDebugMacro(<<"Updating merge point filter. " );
-     mergeFilter->Update();
-     vtkDebugMacro(<<"Getting output. " );
-     input = mergeFilter->GetOutput();
+  
+  mergeFilter->SetContinuity(this->Continuity);
+  mergeFilter->SetDegree(this->Degree);
+  vtkDebugMacro(<<"Setting input" );
+  mergeFilter->SetInputData(input);
+  vtkDebugMacro(<<"Updating merge point filter. " );
+  mergeFilter->Update();
+  vtkDebugMacro(<<"Getting output. " );
+  input = mergeFilter->GetOutput();
 
-     vtkDebugMacro(<<input->GetNumberOfCells() );
-  }
+  vtkDebugMacro(<<input->GetNumberOfCells() );
+
 
   vtkIdType NC=input->GetNumberOfCells();
   vtkIdType NP=input->GetNumberOfPoints();

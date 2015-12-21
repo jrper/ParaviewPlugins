@@ -9,7 +9,13 @@ public:
   static vtkShowCVs* New();
   vtkTypeRevisionMacro(vtkShowCVs,vtkUnstructuredGridAlgorithm);
 
-  void SetMergeToContinuous(int value);
+
+  int Degree, Continuity;
+
+  vtkSetMacro(Degree, int);
+  vtkGetMacro(Degree, int);
+  vtkSetMacro(Continuity, int);
+  vtkGetMacro(Continuity, int);
 
  protected:
 
