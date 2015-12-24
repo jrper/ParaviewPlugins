@@ -19,6 +19,7 @@
 #include "vtkHexahedron.h"
 #include "vtkPolygon.h"
 #include "vtkDoubleArray.h"
+#include "vtkGeometryFilter.h"
 #include "vtkIntArray.h"
 #include "vtkSortDataArray.h"
 #include "vtkMergePointFilter.h"
@@ -71,7 +72,54 @@ void Average(vtkCell* cell,int id1,int id2,int id3, double out[3]) {
   for (int i=0; i<3; i++) {
     out[i]=(p1[i]+p2[i]+p3[i])/3.0;
   }
-}   
+}
+
+void Average(vtkCell* cell,int id1,int id2,int id3,int id4, double out[3]) {
+  double p1[3], p2[3], p3[3], p4[3];
+  
+  cell->GetPoints()->GetPoint(id1,p1);
+  cell->GetPoints()->GetPoint(id2,p2);
+  cell->GetPoints()->GetPoint(id3,p3);
+  cell->GetPoints()->GetPoint(id4,p4);
+
+  for (int i=0; i<3; i++) {
+    out[i]=(p1[i]+p2[i]+p3[i]+p4[i])/4.0;
+  }
+} 
+
+
+void insertFace(vtkCellArray* faces,vtkCell* cell, vtkIdTypeArray** PointList,int pt1, int pt2,
+		int id1,int id2,int id3,int id4) {
+
+  vtkSmartPointer<vtkQuad> quad= vtkSmartPointer<vtkQuad>::New();
+
+  quad->GetPointIds()->SetId(0,id1);
+  quad->GetPointIds()->SetId(1,id2);
+  quad->GetPointIds()->SetId(2,id3);
+  quad->GetPointIds()->SetId(3,id4);
+
+
+  vtkIdType face_id=faces->InsertNextCell(quad);
+
+  PointList[cell->GetPointId(pt1)]->InsertNextValue(face_id);
+  PointList[cell->GetPointId(pt2)]->InsertNextValue(face_id);
+}
+
+void insertFace(vtkCellArray* faces,int pid, vtkIdTypeArray** PointList,int pt1,
+		int id1,int id2,int id3,int id4) {
+
+  vtkSmartPointer<vtkQuad> quad= vtkSmartPointer<vtkQuad>::New();
+
+  quad->GetPointIds()->SetId(0,id1);
+  quad->GetPointIds()->SetId(1,id2);
+  quad->GetPointIds()->SetId(2,id3);
+  quad->GetPointIds()->SetId(3,id4);
+
+
+  vtkIdType face_id=faces->InsertNextCell(quad);
+
+  PointList[pid]->InsertNextValue(face_id);
+}
 
 vtkShowCVs::vtkShowCVs(){
 #ifndef NDEBUG
@@ -561,6 +609,7 @@ int vtkShowCVs::RequestData(
       // Continuous, this is more complicated.
 
       vtkSmartPointer<vtkMergePoints> mergePoints = vtkSmartPointer<vtkMergePoints>::New();
+      vtkSmartPointer<vtkCellArray> faces = vtkSmartPointer<vtkCellArray>::New();
       vtkIdTypeArray *PointList[input->GetNumberOfPoints()];
       vtkIntArray *CellCentreList[input->GetNumberOfPoints()];
    
@@ -646,64 +695,176 @@ int vtkShowCVs::RequestData(
 		}
 	      }
 	      break;
+	      case  VTK_TETRA:
+	      {
+		vtkIdType id[11];
+
+		Average(cell,0,1,2,3,x);
+		mergePoints->InsertUniquePoint(x,id[0]);
+		Average(cell,0,1,2,x);
+		mergePoints->InsertUniquePoint(x,id[1]);
+		Average(cell,1,2,3,x);
+		mergePoints->InsertUniquePoint(x,id[2]);
+		Average(cell,2,3,0,x);
+		mergePoints->InsertUniquePoint(x,id[3]);
+		Average(cell,3,0,1,x);
+		mergePoints->InsertUniquePoint(x,id[4]);
+		Average(cell,0,1,x);
+		mergePoints->InsertUniquePoint(x,id[5]);
+		Average(cell,1,2,x);
+		mergePoints->InsertUniquePoint(x,id[6]);
+		Average(cell,2,0,x);
+		mergePoints->InsertUniquePoint(x,id[7]);
+		Average(cell,0,3,x);
+		mergePoints->InsertUniquePoint(x,id[8]);
+		Average(cell,1,3,x);
+		mergePoints->InsertUniquePoint(x,id[9]);
+		Average(cell,2,3,x);
+		mergePoints->InsertUniquePoint(x,id[10]);
+		
+		insertFace(faces,cell,PointList,0,1,
+			   id[5],id[1],id[0],id[4]);
+		insertFace(faces,cell,PointList,1,2,
+			   id[6],id[1],id[0],id[2]);
+		insertFace(faces,cell,PointList,2,0,
+			   id[7],id[1],id[0],id[3]);
+		insertFace(faces,cell,PointList,0,3,
+			   id[8],id[4],id[0],id[3]);
+		insertFace(faces,cell,PointList,1,3,
+			   id[9],id[2],id[0],id[4]);
+		insertFace(faces,cell,PointList,2,3,
+			   id[10],id[3],id[0],id[2]);
+		
+
+		break;
+	      }
 	    }
 	}
 
-      for (vtkIdType i=0; i<NP;i++)
-	{
-	  vtkSmartPointer<vtkPolygon> polygon =
-	    vtkSmartPointer<vtkPolygon>::New();
-	  vtkSmartPointer<vtkDoubleArray> angleList =
-	    vtkSmartPointer<vtkDoubleArray>::New();
-	  vtkSmartPointer<vtkDoubleArray> angleCList =
-	    vtkSmartPointer<vtkDoubleArray>::New();
-	  vtkSmartPointer<vtkIdList> tempList =
-	    vtkSmartPointer<vtkIdList>::New();
-	  vtkSmartPointer<vtkIdList> tempCList =
-	    vtkSmartPointer<vtkIdList>::New();
+      if (input->GetCellType(0)==VTK_TETRA) {
 
-	  double x[3], p[3], v[3];
+	vtkSmartPointer<vtkGeometryFilter> gf =
+	      vtkSmartPointer<vtkGeometryFilter>::New();
+	vtkSmartPointer<vtkPoints> locpoints =
+	      vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkMergePoints> loc = vtkSmartPointer<vtkMergePoints>::New();
 
-	  input->GetPoints()->GetPoint(i,x);
+	loc->SetTolerance(1.e-34);
+	loc->InitPointInsertion(locpoints, input->GetBounds());
 
-	  for (int j=0;j<PointList[i]->GetNumberOfTuples();j++) {
-	    vtkIdType id;
-	    id=PointList[i]->GetValue(j);
-	    int isCentrePoint=CellCentreList[i]->GetValue(j);
-	    if (tempList->IsId(id)==-1) {
-	      tempList->InsertNextId(id);
-	      tempCList->InsertNextId(isCentrePoint);
-	      outpoints->GetPoint(id,p);
-	      vtkMath::Subtract(p,x,v);
-	      angleList->InsertNextValue(myAngle(v));
-	    }
-	  }
-	  
-	  angleCList->DeepCopy(angleList);
-	  vtkSortDataArray::Sort(angleList,tempList);
-	  vtkSortDataArray::Sort(angleCList,tempCList);
+	for (vtkIdType i=0; i<input->GetNumberOfCells();i++) {
+	  loc->InsertNextPoint(input->GetPoints()->GetPoint(i));
+	}
 
-	  tempCList->InsertNextId(tempCList->GetId(0));
+	gf->SetInputData(input);
+	gf->Update();
 
-	  for (int j=0;j<tempList->GetNumberOfIds();j++) {
-	    polygon->GetPointIds()->InsertNextId(tempList->GetId(j));
-	    if (tempCList->GetId(j)==tempCList->GetId(j+1)) {
+	for (vtkIdType i=0; i<gf->GetOutput()->GetNumberOfCells();i++) {
+	  vtkCell* cell=gf->GetOutput()->GetCell(i);
+	  double x[3];
+	  vtkIdType id[7], pid[3];
+
+	  pid[0]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(0));
+	  pid[1]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(1));
+	  pid[2]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(2));
+
+	  vtkDebugMacro(<<pid[0]<<","<<pid[1]<<","<<pid[2]);
+
+	  Average(cell,0,1,2,x);
+	  mergePoints->InsertUniquePoint(x,id[0]);
+	  Average(cell,0,1,x);
+	  mergePoints->InsertUniquePoint(x,id[1]);
+	  Average(cell,1,2,x);
+	  mergePoints->InsertUniquePoint(x,id[2]);
+	  Average(cell,2,0,x);
+	  mergePoints->InsertUniquePoint(x,id[3]);
+
+	  mergePoints->InsertUniquePoint(cell->GetPoints()->GetPoint(0),id[4]);
+	  mergePoints->InsertUniquePoint(cell->GetPoints()->GetPoint(1),id[5]);
+	  mergePoints->InsertUniquePoint(cell->GetPoints()->GetPoint(2),id[6]);
+
+	  insertFace(faces,pid[0],PointList,0,
+		     id[4],id[1],id[0],id[3]);
+	  insertFace(faces,pid[1],PointList,1,
+		     id[5],id[2],id[0],id[1]);
+	  insertFace(faces,pid[2],PointList,2,
+		     id[6],id[3],id[0],id[2]);
+	}
+
+      }
+
+      for (vtkIdType i=0; i<NP;i++) {
+	  if (input->GetCellType(0)==VTK_TRIANGLE ||
+	      input->GetCellType(0)==VTK_QUADRATIC_TRIANGLE) {
+	    vtkSmartPointer<vtkPolygon> polygon =
+	      vtkSmartPointer<vtkPolygon>::New();
+	    vtkSmartPointer<vtkDoubleArray> angleList =
+	      vtkSmartPointer<vtkDoubleArray>::New();
+	    vtkSmartPointer<vtkDoubleArray> angleCList =
+	      vtkSmartPointer<vtkDoubleArray>::New();
+	    vtkSmartPointer<vtkIdList> tempList =
+	      vtkSmartPointer<vtkIdList>::New();
+	    vtkSmartPointer<vtkIdList> tempCList =
+	      vtkSmartPointer<vtkIdList>::New();
+
+	    double x[3], p[3], v[3];
+	    
+	    input->GetPoints()->GetPoint(i,x);
+
+	    for (int j=0;j<PointList[i]->GetNumberOfTuples();j++) {
 	      vtkIdType id;
-	      mergePoints->InsertUniquePoint(x,id);
-	      polygon->GetPointIds()->InsertNextId(id);
+	      id=PointList[i]->GetValue(j);
+	      int isCentrePoint=CellCentreList[i]->GetValue(j);
+	      if (tempList->IsId(id)==-1) {
+		tempList->InsertNextId(id);
+		tempCList->InsertNextId(isCentrePoint);
+		outpoints->GetPoint(id,p);
+		vtkMath::Subtract(p,x,v);
+		angleList->InsertNextValue(myAngle(v));
+	      }
 	    }
-	  }							  
-      
-	  output->InsertNextCell(polygon->GetCellType(),
-	  			 polygon->GetPointIds());
+	  
+	    angleCList->DeepCopy(angleList);
+	    vtkSortDataArray::Sort(angleList,tempList);
+	    vtkSortDataArray::Sort(angleCList,tempCList);
 
+	    tempCList->InsertNextId(tempCList->GetId(0));
+	    
+	    for (int j=0;j<tempList->GetNumberOfIds();j++) {
+	      polygon->GetPointIds()->InsertNextId(tempList->GetId(j));
+	      if (tempCList->GetId(j)==tempCList->GetId(j+1)) {
+		vtkIdType id;
+		mergePoints->InsertUniquePoint(x,id);
+		polygon->GetPointIds()->InsertNextId(id);
+	      }
+	    }							  
+
+	    output->InsertNextCell(polygon->GetCellType(),
+				   polygon->GetPointIds());
+	  } else {
+	    vtkSmartPointer<vtkIdList> fList =
+	      vtkSmartPointer<vtkIdList>::New();
+	    fList->InsertNextId(PointList[i]->GetNumberOfTuples());
+	    for (int j=0;j<PointList[i]->GetNumberOfTuples();j++) {
+	      vtkIdType npts;
+	      vtkIdType *pts;
+	      faces->GetCell(5*PointList[i]->GetValue(j),npts,pts);
+	      fList->InsertNextId(4);
+	      for (int k=0;k<4;k++) {
+		fList->InsertNextId(pts[k]);
+	      }
+	    }
+	    output->InsertNextCell(VTK_POLYHEDRON,
+				   fList);
+
+	    //	    output->SetCells(VTK_QUAD,faces);
+	  }
 	  PointList[i]->Delete();
 	  CellCentreList[i]->Delete();
 	}
-
     }
     output->SetPoints(outpoints);
-
+    
     
     vtkCellData* cd=output->GetCellData();
     vtkFieldData* pd=(vtkFieldData *) input->GetPointData();
