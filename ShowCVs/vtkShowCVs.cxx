@@ -14,6 +14,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkTriangle.h"
+#include "vtkQuadraticTriangle.h"
 #include "vtkTetra.h"
 #include "vtkQuad.h"
 #include "vtkHexahedron.h"
@@ -30,7 +31,7 @@
 
 
 
-vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.0$");
+vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.5$");
 vtkStandardNewMacro(vtkShowCVs);
 
 double myAngle(double x[3]) {
@@ -119,6 +120,20 @@ void insertFace(vtkCellArray* faces,int pid, vtkIdTypeArray** PointList,int pt1,
   vtkIdType face_id=faces->InsertNextCell(quad);
 
   PointList[pid]->InsertNextValue(face_id);
+}
+
+void MakeQuadratic(vtkCell* incell, vtkCell* outcell) {
+  double x[3];
+  for (int i=0;i<3;i++) {
+    incell->GetPoints()->GetPoint(i,x);
+    outcell->GetPoints()->SetPoint(i,x);
+  }
+  Average(incell,0,1,x);
+  outcell->GetPoints()->SetPoint(3,x);
+  Average(incell,1,2,x);
+  outcell->GetPoints()->SetPoint(4,x);
+  Average(incell,2,0,x);
+  outcell->GetPoints()->SetPoint(5,x);
 }
 
 vtkShowCVs::vtkShowCVs(){
@@ -695,10 +710,10 @@ int vtkShowCVs::RequestData(
 		}
 	      }
 	      break;
-	      case  VTK_TETRA:
+	    case  VTK_TETRA:
 	      {
 		vtkIdType id[11];
-
+		
 		Average(cell,0,1,2,3,x);
 		mergePoints->InsertUniquePoint(x,id[0]);
 		Average(cell,0,1,2,x);
@@ -735,13 +750,137 @@ int vtkShowCVs::RequestData(
 		insertFace(faces,cell,PointList,2,3,
 			   id[10],id[3],id[0],id[2]);
 		
-
-		break;
 	      }
+	    break;
+	    case  VTK_QUADRATIC_TETRA:
+	      {
+		vtkIdType id[22];
+		int M[16] = {0,4,6,7,
+			     1,4,5,8,
+			     2,5,6,9,
+			     3,7,8,9}, *l;
+		
+
+		for(int k=0;k<4;k++) {
+		  l=&(M[4*k]);
+
+		  Average(cell,l[0],l[1],l[2],l[3],x);
+		  mergePoints->InsertUniquePoint(x,id[0]);
+		  Average(cell,l[0],l[1],l[2],x);
+		  mergePoints->InsertUniquePoint(x,id[1]);
+		  Average(cell,l[1],l[2],l[3],x);
+		  mergePoints->InsertUniquePoint(x,id[2]);
+		  Average(cell,l[2],l[3],l[0],x);
+		  mergePoints->InsertUniquePoint(x,id[3]);
+		  Average(cell,l[3],l[0],l[1],x);
+		  mergePoints->InsertUniquePoint(x,id[4]);
+		  Average(cell,l[0],l[1],x);
+		  mergePoints->InsertUniquePoint(x,id[5]);
+		  Average(cell,l[1],l[2],x);
+		  mergePoints->InsertUniquePoint(x,id[6]);
+		  Average(cell,l[2],l[0],x);
+		  mergePoints->InsertUniquePoint(x,id[7]);
+		  Average(cell,l[0],l[3],x);
+		  mergePoints->InsertUniquePoint(x,id[8]);
+		  Average(cell,l[1],l[3],x);
+		  mergePoints->InsertUniquePoint(x,id[9]);
+		  Average(cell,l[2],l[3],x);
+		  mergePoints->InsertUniquePoint(x,id[10]);
+		
+		  insertFace(faces,cell,PointList,l[0],l[1],
+			     id[5],id[1],id[0],id[4]);
+		  insertFace(faces,cell,PointList,l[1],l[2],
+			     id[6],id[1],id[0],id[2]);
+		  insertFace(faces,cell,PointList,l[2],l[0],
+			     id[7],id[1],id[0],id[3]);
+		  insertFace(faces,cell,PointList,l[0],l[3],
+			     id[8],id[4],id[0],id[3]);
+		  insertFace(faces,cell,PointList,l[1],l[3],
+			     id[9],id[2],id[0],id[4]);
+		  insertFace(faces,cell,PointList,l[2],l[3],
+			     id[10],id[3],id[0],id[2]);
+		}
+		
+
+		Average(cell,0,1,2,3,x);
+		mergePoints->InsertUniquePoint(x,id[0]);
+		Average(cell,0,1,2,x);
+		mergePoints->InsertUniquePoint(x,id[1]);
+		Average(cell,1,2,3,x);
+		mergePoints->InsertUniquePoint(x,id[2]);
+		Average(cell,2,3,0,x);
+		mergePoints->InsertUniquePoint(x,id[3]);
+		Average(cell,3,0,1,x);
+		mergePoints->InsertUniquePoint(x,id[4]);
+		Average(cell,4,5,x);
+		mergePoints->InsertUniquePoint(x,id[5]);
+		Average(cell,5,6,x);
+		mergePoints->InsertUniquePoint(x,id[6]);
+		Average(cell,6,4,x);
+		mergePoints->InsertUniquePoint(x,id[7]);
+		Average(cell,4,7,x);
+		mergePoints->InsertUniquePoint(x,id[9]);
+		Average(cell,4,8,x);
+		mergePoints->InsertUniquePoint(x,id[10]);
+		Average(cell,5,8,x);
+		mergePoints->InsertUniquePoint(x,id[11]);
+		Average(cell,5,9,x);
+		mergePoints->InsertUniquePoint(x,id[12]);
+		Average(cell,6,7,x);
+		mergePoints->InsertUniquePoint(x,id[13]);
+		Average(cell,4,6,7,x);
+		mergePoints->InsertUniquePoint(x,id[14]);
+		Average(cell,4,5,8,x);
+		mergePoints->InsertUniquePoint(x,id[15]);
+		Average(cell,5,6,9,x);
+		mergePoints->InsertUniquePoint(x,id[16]);
+		Average(cell,7,8,9,x);
+		mergePoints->InsertUniquePoint(x,id[17]);
+		Average(cell,7,8,x);
+		mergePoints->InsertUniquePoint(x,id[18]);
+		Average(cell,8,9,x);
+		mergePoints->InsertUniquePoint(x,id[19]);
+		Average(cell,6,9,x);
+		mergePoints->InsertUniquePoint(x,id[20]);
+		Average(cell,7,9,x);
+		mergePoints->InsertUniquePoint(x,id[21]);
+
+		insertFace(faces,cell,PointList,4,5,
+			     id[5],id[1],id[0],id[15]);
+		insertFace(faces,cell,PointList,4,6,
+			     id[7],id[1],id[0],id[14]);
+		insertFace(faces,cell,PointList,5,6,
+			     id[6],id[1],id[0],id[16]);
+		insertFace(faces,cell,PointList,4,8,
+			     id[10],id[4],id[0],id[15]);
+		insertFace(faces,cell,PointList,4,7,
+			     id[9],id[4],id[0],id[14]);
+		insertFace(faces,cell,PointList,7,8,
+			     id[18],id[4],id[0],id[17]);
+		insertFace(faces,cell,PointList,5,8,
+			     id[11],id[2],id[0],id[15]);
+		insertFace(faces,cell,PointList,5,9,
+			     id[12],id[2],id[0],id[16]);
+		insertFace(faces,cell,PointList,8,9,
+			     id[19],id[2],id[0],id[17]);
+		insertFace(faces,cell,PointList,6,7,
+			     id[13],id[3],id[0],id[14]);
+		insertFace(faces,cell,PointList,6,9,
+			     id[20],id[3],id[0],id[16]);
+		insertFace(faces,cell,PointList,7,9,
+			     id[21],id[3],id[0],id[17]);
+		
+
+
+	      }
+	      break;
+	      
+	    
 	    }
 	}
 
-      if (input->GetCellType(0)==VTK_TETRA) {
+      if (input->GetCellType(0)==VTK_TETRA ||
+	  input->GetCellType(0)==VTK_QUADRATIC_TETRA) {
 
 	vtkSmartPointer<vtkGeometryFilter> gf =
 	      vtkSmartPointer<vtkGeometryFilter>::New();
@@ -752,9 +891,9 @@ int vtkShowCVs::RequestData(
 	loc->SetTolerance(1.e-34);
 	loc->InitPointInsertion(locpoints, input->GetBounds());
 
-	for (vtkIdType i=0; i<input->GetNumberOfCells();i++) {
+	for (vtkIdType i=0; i<input->GetNumberOfPoints();i++) {
 	  loc->InsertNextPoint(input->GetPoints()->GetPoint(i));
-	}
+	} 
 
 	gf->SetInputData(input);
 	gf->Update();
@@ -767,8 +906,6 @@ int vtkShowCVs::RequestData(
 	  pid[0]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(0));
 	  pid[1]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(1));
 	  pid[2]=loc->IsInsertedPoint(cell->GetPoints()->GetPoint(2));
-
-	  vtkDebugMacro(<<pid[0]<<","<<pid[1]<<","<<pid[2]);
 
 	  Average(cell,0,1,2,x);
 	  mergePoints->InsertUniquePoint(x,id[0]);
@@ -792,6 +929,7 @@ int vtkShowCVs::RequestData(
 	}
 
       }
+		
 
       for (vtkIdType i=0; i<NP;i++) {
 	  if (input->GetCellType(0)==VTK_TRIANGLE ||
@@ -855,10 +993,10 @@ int vtkShowCVs::RequestData(
 	      }
 	    }
 	    output->InsertNextCell(VTK_POLYHEDRON,
-				   fList);
+	    			   fList);
 
-	    //	    output->SetCells(VTK_QUAD,faces);
 	  }
+	  //	  output->SetCells(VTK_QUAD,faces);
 	  PointList[i]->Delete();
 	  CellCentreList[i]->Delete();
 	}
