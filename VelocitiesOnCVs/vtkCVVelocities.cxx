@@ -22,21 +22,21 @@
 vtkCxxRevisionMacro(vtkCVVelocities, "$Revision: 0.0$");
 vtkStandardNewMacro(vtkCVVelocities);
 
-vtkCVVelocities::vtkCVVelocities(){};
+vtkCVVelocities::vtkCVVelocities(){
+#ifndef NDEBUG
+  this->DebugOn();
+#endif
+  this->Degree=-1;
+  this->Continuity=0;
+  this->inputContinuity=0;
+};
 vtkCVVelocities::~vtkCVVelocities(){};
 
-//vtkQuad* vtkCVVelocities::make_quad(
-//			 vtkIdlist* pts,
-//			 vtkIdType[4] a)
-//{ vtkQuad* newQuad=vtkUnstructuredGrid::Quad::New();
-//  vtkIdList* quadIds=newQuad->GetPointIds();
-//  for (j=0,j<5,j++)
-//    {
-//      quadIds->SetId(j,pts.GetId(a[j]));
-//   }
-//  return quadIds
-//}
-
+int vtkCVVelocities::isContinuous(){
+  return (this->Continuity==1 || 
+	  (this->Continuity == 0 && this->inputContinuity == 1));
+}
+  
 int vtkCVVelocities::RequestData(
 		      vtkInformation* vtkNotUsed(request),
 		      vtkInformationVector **inputVector,
@@ -61,20 +61,23 @@ int vtkCVVelocities::RequestData(
   opd->InterpolateAllocate(ipd);
 
 
+  if (input->GetNumberOfPoints()==(input->GetNumberOfCells()*input->GetCell(0)->GetNumberOfPoints())) {
+    this->inputContinuity=-1;
+  } else {
+    this->inputContinuity=1;
+  }
 
 
   //  this->DebugOn();
 
   if (NC==0)
     {
-      //      vtkDebugMacro(<<"NothingToExtract"<<NC<<NP);
+      vtkDebugMacro(<<"NothingToExtract");
       return 1;
     }  else {
-    //    vtkDebugMacro(<<"Extracting Points" << NC);
+    vtkDebugMacro(<<"Extracting Points : " << NC);
   }
     vtkSmartPointer<vtkPoints> outpoints= vtkSmartPointer<vtkPoints>::New();
-    outpoints->Allocate(4*NC);
-  
 
   for(vtkIdType i = 0;i<NC;i++)
      {
@@ -89,11 +92,22 @@ int vtkCVVelocities::RequestData(
 
        double center[3];
 
+       int npc;
+
        switch (cell->GetCellType())
 	 {
 	 case  VTK_TRIANGLE:
 	   {
-	     ptsIds->Allocate(8);
+
+	     if (this->isContinuous()) {
+	       npc=3;
+	     } else {
+	       npc=9;
+	     }
+
+
+
+	     ptsIds->Allocate(npc);
 	   vtkTriangle::TriangleCenter(pts->GetPoint(0),
 				       pts->GetPoint(1),
 				       pts->GetPoint(2),
@@ -134,34 +148,112 @@ int vtkCVVelocities::RequestData(
 			+5.0/12.0*pts->GetPoint(0)[2]
 			 +1.0/6.0 *pts->GetPoint(1)[2]							   ));
 
-	   myVertex->GetPointIds()->SetId(0,ptsIds->GetId(0));
-	   output->InsertNextCell(myVertex->GetCellType(),
-				  myVertex->GetPointIds());
 
-	   myVertex->GetPointIds()->SetId(0,ptsIds->GetId(1));
-	   output->InsertNextCell(myVertex->GetCellType(),
-				  myVertex->GetPointIds());
-	   
-	   myVertex->GetPointIds()->SetId(0,ptsIds->GetId(2));
-	   output->InsertNextCell(myVertex->GetCellType(),
-				  myVertex->GetPointIds());
+	       if (~this->isContinuous()) {
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(0)[0]
+			+3.0/4.0*pts->GetPoint(1)[0],
+			 1.0/4.0*pts->GetPoint(0)[1]
+			+3.0/4.0*pts->GetPoint(1)[1],
+			 1.0/4.0*pts->GetPoint(0)[2]
+			+3.0/4.0*pts->GetPoint(1)[2]
+								 ));
+
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(1)[0]
+			+3.0/4.0*pts->GetPoint(0)[0],
+			 1.0/4.0*pts->GetPoint(1)[1]
+			+3.0/4.0*pts->GetPoint(0)[1],
+			 1.0/4.0*pts->GetPoint(1)[2]
+			+3.0/4.0*pts->GetPoint(0)[2]
+								 ));
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(0)[0]
+			+3.0/4.0*pts->GetPoint(2)[0],
+			 1.0/4.0*pts->GetPoint(0)[1]
+			+3.0/4.0*pts->GetPoint(2)[1],
+			 1.0/4.0*pts->GetPoint(0)[2]
+			+3.0/4.0*pts->GetPoint(2)[2]
+								 ));
+
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(2)[0]
+			+3.0/4.0*pts->GetPoint(0)[0],
+			 1.0/4.0*pts->GetPoint(2)[1]
+			+3.0/4.0*pts->GetPoint(0)[1],
+			 1.0/4.0*pts->GetPoint(2)[2]
+			+3.0/4.0*pts->GetPoint(0)[2]
+								 ));
+
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(1)[0]
+			+3.0/4.0*pts->GetPoint(2)[0],
+			 1.0/4.0*pts->GetPoint(1)[1]
+			+3.0/4.0*pts->GetPoint(2)[1],
+			 1.0/4.0*pts->GetPoint(1)[2]
+			+3.0/4.0*pts->GetPoint(2)[2]
+								 ));
+
+		 ptsIds->InsertNextId(outpoints->InsertNextPoint(
+			 1.0/4.0*pts->GetPoint(2)[0]
+			+3.0/4.0*pts->GetPoint(1)[0],
+			 1.0/4.0*pts->GetPoint(2)[1]
+			+3.0/4.0*pts->GetPoint(1)[1],
+			 1.0/4.0*pts->GetPoint(2)[2]
+			+3.0/4.0*pts->GetPoint(1)[2]
+								 ));
+	       }
+
+
+	       for (int j=0;j<npc;j++) {
+		 
+		 myVertex->GetPointIds()->SetId(0,ptsIds->GetId(j));
+		 output->InsertNextCell(myVertex->GetCellType(),
+					myVertex->GetPointIds());
+	       }
+	     
 
 	   myVertex->Delete();
-
-
 	   
 	   {
-	     double w[3]={5.0/12,5.0/12,1.0/6.0};
-	     opd->InterpolatePoint(ipd,3*i,cell->GetPointIds(),w);
+	     double w[3]={5.0/12.0,5.0/12,1.0/6.0};
+	     opd->InterpolatePoint(ipd,npc*i,cell->GetPointIds(),w);
 	    }
 	   {
-	     double w[3]={2.0/12,5.0/12,5.0/12.0};
-	     opd->InterpolatePoint(ipd,3*i+1,cell->GetPointIds(),w);
+	     double w[3]={2.0/12.0,5.0/12.0,5.0/12.0};
+	     opd->InterpolatePoint(ipd,npc*i+1,cell->GetPointIds(),w);
 	       }
 	   {
-	     double w[3]={5.0/12,2.0/12,5.0/12.0};
-	     opd->InterpolatePoint(ipd,3*i+2,cell->GetPointIds(),w);
+	     double w[3]={5.0/12.0,2.0/12.0,5.0/12.0};
+	     opd->InterpolatePoint(ipd,npc*i+2,cell->GetPointIds(),w);
 	    }
+
+	   if (~this->isContinuous()) {
+	     {
+	       double w[3]={1.0/4.0,3.0/4.0,0.0};
+	       opd->InterpolatePoint(ipd,npc*i+3,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={3.0/4.0,1.0/4.0,0.0};
+	       opd->InterpolatePoint(ipd,npc*i+4,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={1.0/4.0,0.0,3.0/4.0};
+	       opd->InterpolatePoint(ipd,npc*i+5,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={3.0/4.0,0.0,1.0/4.0};
+	       opd->InterpolatePoint(ipd,npc*i+6,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={0.0,1.0/4.0,3.0/4.0};
+	       opd->InterpolatePoint(ipd,npc*i+7,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={0.0,3.0/4.0,1.0/4.0};
+	       opd->InterpolatePoint(ipd,npc*i+8,cell->GetPointIds(),w);
+	     }
+	   }
 
 	   break;
 	 }
@@ -567,7 +659,7 @@ int vtkCVVelocities::RequestUpdateExtent(
   numPieces=outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_PIECES());
   ghostLevels=outInfo->Get(vtkStreamingDemandDrivenPipeline::UPDATE_NUMBER_OF_GHOST_LEVELS());
 
-  if (numPieces > 1);
+  if (numPieces > 1)
   {
     ++ghostLevels;
   }
