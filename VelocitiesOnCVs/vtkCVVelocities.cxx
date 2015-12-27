@@ -16,11 +16,26 @@
 #include "vtkTetra.h"
 #include "vtkVertex.h"
 #include "vtkQuad.h"
+#include "vtkDoubleArray.h"
 #include "vtkPolygon.h"
 #include "vtkHexahedron.h"
 
 vtkCxxRevisionMacro(vtkCVVelocities, "$Revision: 0.0$");
 vtkStandardNewMacro(vtkCVVelocities);
+
+void InterpolatePoint(vtkCellData* opd,vtkPointData* ipd,vtkIdList* pointList,double* w) {
+
+  for(int i=0; i<ipd->GetNumberOfArrays();i++){
+    double v[ipd->GetArray(i)->GetNumberOfComponents()];
+    for(int j=0; j<ipd->GetArray(i)->GetNumberOfComponents();j++) {
+      v[j]=0.0;
+      for(int k=0;k<pointList->GetNumberOfIds();k++) {
+	v[j]=v[j]+w[k]*ipd->GetArray(i)->GetComponent(pointList->GetId(k),j);
+      }
+    }
+    opd->GetArray(ipd->GetArray(i)->GetName())->InsertNextTuple(v);
+  }
+}
 
 vtkCVVelocities::vtkCVVelocities(){
 #ifndef NDEBUG
@@ -53,13 +68,7 @@ int vtkCVVelocities::RequestData(
 
 
   vtkCellData* cd=output->GetCellData();
-  vtkPointData* opd=output->GetPointData();
-  output->Allocate(0);
   vtkPointData* ipd=input->GetPointData();
-  vtkFieldData* pd=(vtkFieldData *) input->GetPointData();
-
-  opd->InterpolateAllocate(ipd);
-
 
   if (input->GetNumberOfPoints()==(input->GetNumberOfCells()*input->GetCell(0)->GetNumberOfPoints())) {
     this->inputContinuity=-1;
@@ -67,6 +76,27 @@ int vtkCVVelocities::RequestData(
     this->inputContinuity=1;
   }
 
+  int npc;
+    
+  switch (input->GetCell(0)->GetCellType())
+    {
+    case  VTK_TRIANGLE:
+      {
+	
+	if (this->isContinuous()) {
+	  npc=3;
+	} else {
+	  npc=9;
+	}
+      }
+      break;
+    }
+
+
+  vtkSmartPointer<vtkPoints> outpoints= vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkCellData> opd= vtkSmartPointer<vtkCellData>::New();
+  outpoints->Allocate(npc*NC);
+  output->Allocate(npc*NC);
 
   //  this->DebugOn();
 
@@ -77,7 +107,6 @@ int vtkCVVelocities::RequestData(
     }  else {
     vtkDebugMacro(<<"Extracting Points : " << NC);
   }
-    vtkSmartPointer<vtkPoints> outpoints= vtkSmartPointer<vtkPoints>::New();
 
   for(vtkIdType i = 0;i<NC;i++)
      {
@@ -92,29 +121,20 @@ int vtkCVVelocities::RequestData(
 
        double center[3];
 
-       int npc;
-
        switch (cell->GetCellType())
 	 {
 	 case  VTK_TRIANGLE:
 	   {
 
-	     if (this->isContinuous()) {
-	       npc=3;
-	     } else {
-	       npc=9;
-	     }
-
-
 
 	     ptsIds->Allocate(npc);
-	   vtkTriangle::TriangleCenter(pts->GetPoint(0),
+	     vtkTriangle::TriangleCenter(pts->GetPoint(0),
 				       pts->GetPoint(1),
 				       pts->GetPoint(2),
 				       center);
-	   vtkVertex* myVertex=vtkVertex::New();
-
-	   ptsIds->InsertNextId(outpoints->InsertNextPoint(
+	     vtkVertex* myVertex=vtkVertex::New();
+	     
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
 			 5.0/12.0*pts->GetPoint(0)[0]
 			+5.0/12.0*pts->GetPoint(1)[0]
 			+1.0/6.0 *pts->GetPoint(2)[0],
@@ -126,7 +146,7 @@ int vtkCVVelocities::RequestData(
 			 +1.0/6.0 *pts->GetPoint(2)[2]							   ));
 
 
-	   ptsIds->InsertNextId(outpoints->InsertNextPoint(
+	     ptsIds->InsertNextId(outpoints->InsertNextPoint(
 			 5.0/12.0*pts->GetPoint(1)[0]
 			+5.0/12.0*pts->GetPoint(2)[0]
 			+1.0/6.0 *pts->GetPoint(0)[0],
@@ -213,48 +233,7 @@ int vtkCVVelocities::RequestData(
 	       }
 	     
 
-	   myVertex->Delete();
-	   
-	   {
-	     double w[3]={5.0/12.0,5.0/12,1.0/6.0};
-	     opd->InterpolatePoint(ipd,npc*i,cell->GetPointIds(),w);
-	    }
-	   {
-	     double w[3]={2.0/12.0,5.0/12.0,5.0/12.0};
-	     opd->InterpolatePoint(ipd,npc*i+1,cell->GetPointIds(),w);
-	       }
-	   {
-	     double w[3]={5.0/12.0,2.0/12.0,5.0/12.0};
-	     opd->InterpolatePoint(ipd,npc*i+2,cell->GetPointIds(),w);
-	    }
-
-	   if (~this->isContinuous()) {
-	     {
-	       double w[3]={1.0/4.0,3.0/4.0,0.0};
-	       opd->InterpolatePoint(ipd,npc*i+3,cell->GetPointIds(),w);
-	     }
-	     {
-	       double w[3]={3.0/4.0,1.0/4.0,0.0};
-	       opd->InterpolatePoint(ipd,npc*i+4,cell->GetPointIds(),w);
-	     }
-	     {
-	       double w[3]={1.0/4.0,0.0,3.0/4.0};
-	       opd->InterpolatePoint(ipd,npc*i+5,cell->GetPointIds(),w);
-	     }
-	     {
-	       double w[3]={3.0/4.0,0.0,1.0/4.0};
-	       opd->InterpolatePoint(ipd,npc*i+6,cell->GetPointIds(),w);
-	     }
-	     {
-	       double w[3]={0.0,1.0/4.0,3.0/4.0};
-	       opd->InterpolatePoint(ipd,npc*i+7,cell->GetPointIds(),w);
-	     }
-	     {
-	       double w[3]={0.0,3.0/4.0,1.0/4.0};
-	       opd->InterpolatePoint(ipd,npc*i+8,cell->GetPointIds(),w);
-	     }
-	   }
-
+	   myVertex->Delete();	   
 	   break;
 	 }
 	 case  VTK_QUADRATIC_TRIANGLE:
@@ -634,8 +613,74 @@ int vtkCVVelocities::RequestData(
      }
   
   output->SetPoints(outpoints);
-
   
+  for (int i=0; i<ipd->GetNumberOfArrays();i++) {
+    vtkSmartPointer<vtkDoubleArray> data= vtkSmartPointer<vtkDoubleArray>::New();
+    data->SetName(ipd->GetArray(i)->GetName());
+    data->SetNumberOfComponents(ipd->GetArray(i)->GetNumberOfComponents());
+    opd->AddArray(data);
+  }
+
+  vtkDebugMacro(<<"Interpolating data" << NC);
+
+  for(vtkIdType i = 0;i<NC;i++)
+     {
+       //vtkDebugMacro(<<"GetCell " << i);
+       vtkCell* cell=input->GetCell(i);
+
+       switch (cell->GetCellType())
+	 {
+	 case  VTK_TRIANGLE:
+	   {
+
+	   {
+	     double w[3]={5.0/12.0,5.0/12,1.0/6.0};
+	     InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	    }
+	   {
+	     double w[3]={2.0/12.0,5.0/12.0,5.0/12.0};
+	     InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	       }
+	   {
+	     double w[3]={5.0/12.0,2.0/12.0,5.0/12.0};
+	     InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	    }
+
+	   if (~this->isContinuous()) {
+	     {
+	       double w[3]={1.0/4.0,3.0/4.0,0.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={3.0/4.0,1.0/4.0,0.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={1.0/4.0,0.0,3.0/4.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={3.0/4.0,0.0,1.0/4.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={0.0,1.0/4.0,3.0/4.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     {
+	       double w[3]={0.0,3.0/4.0,1.0/4.0};
+	       InterpolatePoint(opd,ipd,cell->GetPointIds(),w);
+	     }
+	     
+	   }
+	   }
+	   break;
+	 }
+     }
+
+  output->GetCellData()->DeepCopy(opd);  
+
+  vtkDebugMacro(<<"Finished");
 
   //  outpoints->Delete();
   return 1;
