@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="vtkTemplate" class="vtkTemplate" label="Template Filter">
+      <Documentation long_help="Template Filter" short_help="Template Filter">
+      </Documentation>
+      <InputProperty
+	  name="Input"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
