@@ -13,6 +13,7 @@
 #include "vtkDataObject.h"
 #include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkLine.h"
 #include "vtkTriangle.h"
 #include "vtkQuadraticTriangle.h"
 #include "vtkTetra.h"
@@ -23,8 +24,9 @@
 #include "vtkGeometryFilter.h"
 #include "vtkIntArray.h"
 #include "vtkSortDataArray.h"
-#include "vtkMergePointFilter.h"
 #include "vtkTrivialProducer.h"
+#include "vtkMergePointFilter.h"
+#include <vtkVersion.h>
 #include <iostream>
 #include <map>
 #include <cmath>
@@ -45,11 +47,18 @@ double myInternalAngle(vtkCell* cell,int id1,int id2,int id3) {
   cell->GetPoints()->GetPoint(id2,p2);
   cell->GetPoints()->GetPoint(id3,p3);
 
+  double dot=0.0, n2=0.0,n3=0.0;
+
   for (int i=0; i<3; i++) {
-p2[i]=p2[i]-p1[i];
-p3[i]=p3[i]-p1[i];
-}
-return vtkMath::AngleBetweenVectors(p2,p3);
+    p2[i]=p2[i]-p1[i];
+    p3[i]=p3[i]-p1[i];
+    dot += p2[i]*p3[i];
+    n2 += p2[i]*p2[i];
+    n3 += p3[i]*p3[i];
+  }
+
+  return acos(dot/sqrt(n2*n3));
+ 
 }
 
 void Average(vtkCell* cell,int id1,int id2, double out[3]) {
@@ -163,7 +172,11 @@ int vtkShowCVs::RequestData(
   mergeFilter->SetContinuity(this->Continuity);
   mergeFilter->SetDegree(this->Degree);
   vtkDebugMacro(<<"Setting input" );
+#if VTK_MAJOR_VERSION <= 5
+  mergeFilter->SetInput(input);
+#else
   mergeFilter->SetInputData(input);
+#endif
   vtkDebugMacro(<<"Updating merge point filter. " );
   mergeFilter->Update();
   vtkDebugMacro(<<"Getting output. " );
@@ -195,6 +208,19 @@ int vtkShowCVs::RequestData(
 
     switch (cell->GetCellType())
     {
+    case  VTK_LINE:
+      {
+	vtkDebugMacro(<<"Linear Mesh" );
+	if (2*NC==NP){
+	  discontinuous=-1;
+	  NPointsOut=2*NC;
+	} else {
+	  vtkDebugMacro(<<"Continuous " );
+	  discontinuous=1;
+	  NPointsOut=3*NC;
+	}
+      }
+      break;
     case  VTK_TRIANGLE:
       {
 	vtkDebugMacro(<<"Triangular Mesh " );
@@ -265,6 +291,34 @@ int vtkShowCVs::RequestData(
 	  
 	  switch (cell->GetCellType())
 	    {
+
+	    case  VTK_LINE:
+	      {
+		ptsIds->Allocate(6);
+		ptsIds->InsertNextId(cell->GetPointIds()->GetId(0));
+		ptsIds->InsertNextId(cell->GetPointIds()->GetId(1));
+
+		vtkLine* myLine=vtkLine::New();
+
+		ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.5*pts->GetPoint(0)[0]+0.5*pts->GetPoint(1)[0],
+		  0.5*pts->GetPoint(0)[1]+0.5*pts->GetPoint(1)[1],
+		  0.5*pts->GetPoint(0)[2]+0.5*pts->GetPoint(1)[2]
+							   ));
+		myLine->GetPointIds()->SetId(0,ptsIds->GetId(0));
+		myLine->GetPointIds()->SetId(1,ptsIds->GetId(2));
+
+		output->InsertNextCell(myLine->GetCellType(),
+				       myLine->GetPointIds());
+
+		myLine->GetPointIds()->SetId(0,ptsIds->GetId(1));
+
+		output->InsertNextCell(myLine->GetCellType(),
+				       myLine->GetPointIds());
+
+		myLine->Delete();
+	      }	
+	      break;
 	    case  VTK_TRIANGLE:
 	   {
 	     ptsIds->Allocate(6);
@@ -894,8 +948,11 @@ int vtkShowCVs::RequestData(
 	for (vtkIdType i=0; i<input->GetNumberOfPoints();i++) {
 	  loc->InsertNextPoint(input->GetPoints()->GetPoint(i));
 	} 
-
-	gf->SetInputData(input);
+#if VTK_MAJOR_VERSION <= 5
+        gf->SetInput(input);
+#else
+        gf->SetInputData(input);
+#endif
 	gf->Update();
 
 	for (vtkIdType i=0; i<gf->GetOutput()->GetNumberOfCells();i++) {
@@ -929,7 +986,6 @@ int vtkShowCVs::RequestData(
 	}
 
       }
-		
 
       for (vtkIdType i=0; i<NP;i++) {
 	  if (input->GetCellType(0)==VTK_TRIANGLE ||
