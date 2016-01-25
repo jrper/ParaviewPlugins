@@ -14,6 +14,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkLine.h"
+#include "vtkPolyLine.h"
 #include "vtkTriangle.h"
 #include "vtkQuadraticTriangle.h"
 #include "vtkTetra.h"
@@ -217,7 +218,7 @@ int vtkShowCVs::RequestData(
 	} else {
 	  vtkDebugMacro(<<"Continuous " );
 	  discontinuous=1;
-	  NPointsOut=3*NC;
+	  NPointsOut=NP+NC;
 	}
       }
       break;
@@ -682,13 +683,21 @@ int vtkShowCVs::RequestData(
       vtkIdTypeArray *PointList[input->GetNumberOfPoints()];
       vtkIntArray *CellCentreList[input->GetNumberOfPoints()];
    
+      mergePoints->SetTolerance(1.e-34);
+      mergePoints->InitPointInsertion(outpoints, input->GetBounds());
+
       for(vtkIdType i=0;i<input->GetNumberOfPoints();i++){
 	PointList[i] = vtkIdTypeArray::New();
 	CellCentreList[i] = vtkIntArray::New();
+	if (input->GetCell(0)->GetCellType()==VTK_LINE)
+	  {
+	    vtkIdType id;
+	    mergePoints->InsertUniquePoint(input->GetPoints()->GetPoint(i),id);
+	    PointList[i]->Allocate(3);
+	    PointList[i]->InsertNextValue(-1);
+	    PointList[i]->InsertNextValue(id);
+	  }
       }
-      
-      mergePoints->SetTolerance(1.e-34);
-      mergePoints->InitPointInsertion(outpoints, input->GetBounds());
 
       vtkDebugMacro(<<"Cell Count" << NC);
 
@@ -701,6 +710,20 @@ int vtkShowCVs::RequestData(
 	  vtkIdType id;
 	  switch (cell->GetCellType())
 	    {
+	    case  VTK_LINE:
+	      {
+		Average(cell,0,1,x);
+		mergePoints->InsertUniquePoint(x,id);
+		for (int j=0; j<2; j++)
+		  {
+		    if (PointList[cell->GetPointId(j)]->GetValue(0)==-1) {
+		      PointList[cell->GetPointId(j)]->SetValue(0,id);
+		    } else {
+		      PointList[cell->GetPointId(j)]->InsertNextValue(id);
+		    }
+		  }
+	      }
+	      break;
 	    case  VTK_TRIANGLE:
 	      {
 
@@ -988,6 +1011,18 @@ int vtkShowCVs::RequestData(
       }
 
       for (vtkIdType i=0; i<NP;i++) {
+	if (input->GetCellType(0)==VTK_LINE) {
+	  vtkPolyLine *polyLine = vtkPolyLine::New();
+	  
+	  polyLine->GetPointIds()->SetNumberOfIds(PointList[i]->GetNumberOfTuples());
+	  for (int j=0; j<PointList[i]->GetNumberOfTuples();j++) {
+	    polyLine->GetPointIds()->SetId(j,PointList[i]->GetValue(i));
+	  }
+
+	  output->InsertNextCell(polyLine->GetCellType(),
+				 polyLine->GetPointIds());
+	  polyLine->Delete();
+	}
 	  if (input->GetCellType(0)==VTK_TRIANGLE ||
 	      input->GetCellType(0)==VTK_QUADRATIC_TRIANGLE) {
 	    vtkSmartPointer<vtkPolygon> polygon =
