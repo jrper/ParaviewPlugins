@@ -222,6 +222,19 @@ int vtkShowCVs::RequestData(
 	}
       }
       break;
+      case  VTK_QUADRATIC_EDGE:
+      {
+	vtkDebugMacro(<<"Linear Mesh" );
+	if (2*NC==NP){
+	  discontinuous=-1;
+	  NPointsOut=3*NC;
+	} else {
+	  vtkDebugMacro(<<"Continuous " );
+	  discontinuous=1;
+	  NPointsOut=NP+2*NC;
+	}
+      }
+      break;
     case  VTK_TRIANGLE:
       {
 	vtkDebugMacro(<<"Triangular Mesh " );
@@ -689,7 +702,7 @@ int vtkShowCVs::RequestData(
       for(vtkIdType i=0;i<input->GetNumberOfPoints();i++){
 	PointList[i] = vtkIdTypeArray::New();
 	CellCentreList[i] = vtkIntArray::New();
-	if (input->GetCell(0)->GetCellType()==VTK_LINE)
+	if (input->GetCell(0)->GetCellType()==VTK_LINE || input->GetCell(0)->GetCellType()==VTK_QUADRATIC_EDGE)
 	  {
 	    vtkIdType id;
 	    mergePoints->InsertUniquePoint(input->GetPoints()->GetPoint(i),id);
@@ -722,6 +735,23 @@ int vtkShowCVs::RequestData(
 		      PointList[cell->GetPointId(j)]->InsertNextValue(id);
 		    }
 		  }
+	      }
+	      break;
+	    case  VTK_QUADRATIC_EDGE:
+	      {
+		int el[4]={0,2,2,1};
+		for (int k=0; k<2; k++) {
+		  Average(cell,el[2*k],el[2*k+1],x);
+		  mergePoints->InsertUniquePoint(x,id);
+		  for (int j=0; j<2; j++)
+		    {
+		      if (PointList[cell->GetPointId(el[2*k+j])]->GetValue(0)==-1) {
+			PointList[cell->GetPointId(el[2*k+j])]->SetValue(0,id);
+		      } else {
+			PointList[cell->GetPointId(el[2*k+j])]->InsertNextValue(id);
+		      }
+		    }
+		}
 	      }
 	      break;
 	    case  VTK_TRIANGLE:
@@ -1011,7 +1041,7 @@ int vtkShowCVs::RequestData(
       }
 
       for (vtkIdType i=0; i<NP;i++) {
-	if (input->GetCellType(0)==VTK_LINE) {
+	if (input->GetCellType(0)==VTK_LINE || input->GetCellType(0)==VTK_QUADRATIC_EDGE) {
 	  vtkPolyLine *polyLine = vtkPolyLine::New();
 	  
 	  polyLine->GetPointIds()->SetNumberOfIds(PointList[i]->GetNumberOfTuples());
