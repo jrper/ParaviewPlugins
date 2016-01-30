@@ -30,23 +30,25 @@ int vtkTemplate::RequestData(
 		      vtkInformationVector* outputVector )
 {
 
-  vtkInformation* outInfo0=outputVector->GetInformationObject(0);
-  vtkUnstructuredGrid* output0= vtkUnstructuredGrid::SafeDownCast(outInfo0->Get(vtkDataObject::DATA_OBJECT() ) );
+  vtkInformation* outInfo=outputVector->GetInformationObject(0);
+  vtkUnstructuredGrid* output= vtkUnstructuredGrid::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT() ) );
   
-  vtkInformation *inInfo0=inputVector[0]->GetInformationObject(0);
-  vtkUnstructuredGrid* input0= vtkUnstructuredGrid::GetData(inputVector[0]);
+  vtkInformation *inInfo=inputVector[0]->GetInformationObject(0);
+  vtkUnstructuredGrid* input= vtkUnstructuredGrid::GetData(inputVector[0]);
 
-  vtkSmartPointer<vtkPoints> outpoints0= vtkSmartPointer<vtkPoints>::New();  
+  vtkSmartPointer<vtkPoints> outpoints= vtkSmartPointer<vtkPoints>::New();  
 
 #ifndef NDEBUG
   this->DebugOn();
 #endif
 
-
-  outpoints0->DeepCopy(input0->GetPoints());
-  output0->SetPoints(outpoints0);
-  output0->GetCellData()->DeepCopy(input0->GetCellData());
-  output0->GetPointData()->DeepCopy(input0->GetPointData());
+  outpoints->DeepCopy(input->GetPoints());
+  output->SetPoints(outpoints);
+  output->SetCells(input->GetCellTypesArray(),
+		   input->GetCellLocationsArray(),
+		   input->GetCells());
+  output->GetCellData()->DeepCopy(input->GetCellData());
+  output->GetPointData()->DeepCopy(input->GetPointData());
 
   return 1;
 }
