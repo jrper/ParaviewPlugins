@@ -227,7 +227,7 @@ int vtkShowCVs::RequestData(
 	vtkDebugMacro(<<"Linear Mesh" );
 	if (2*NC==NP){
 	  discontinuous=-1;
-	  NPointsOut=3*NC;
+	  NPointsOut=4*NC;
 	} else {
 	  vtkDebugMacro(<<"Continuous " );
 	  discontinuous=1;
@@ -308,7 +308,7 @@ int vtkShowCVs::RequestData(
 
 	    case  VTK_LINE:
 	      {
-		ptsIds->Allocate(6);
+		ptsIds->Allocate(3);
 		ptsIds->InsertNextId(cell->GetPointIds()->GetId(0));
 		ptsIds->InsertNextId(cell->GetPointIds()->GetId(1));
 
@@ -326,6 +326,43 @@ int vtkShowCVs::RequestData(
 				       myLine->GetPointIds());
 
 		myLine->GetPointIds()->SetId(0,ptsIds->GetId(1));
+
+		output->InsertNextCell(myLine->GetCellType(),
+				       myLine->GetPointIds());
+
+		myLine->Delete();
+	      }	
+	      break;
+	    case  VTK_QUADRATIC_EDGE:
+	      {
+		ptsIds->Allocate(4);
+		ptsIds->InsertNextId(cell->GetPointIds()->GetId(0));
+		ptsIds->InsertNextId(cell->GetPointIds()->GetId(1));
+
+		vtkLine* myLine=vtkLine::New();
+
+		ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.5*pts->GetPoint(0)[0]+0.5*pts->GetPoint(2)[0],
+		  0.5*pts->GetPoint(0)[1]+0.5*pts->GetPoint(2)[1],
+		  0.5*pts->GetPoint(0)[2]+0.5*pts->GetPoint(2)[2]
+							   ));
+		ptsIds->InsertNextId(outpoints->InsertNextPoint(
+		  0.5*pts->GetPoint(1)[0]+0.5*pts->GetPoint(2)[0],
+		  0.5*pts->GetPoint(1)[1]+0.5*pts->GetPoint(2)[1],
+		  0.5*pts->GetPoint(1)[2]+0.5*pts->GetPoint(2)[2]
+							   ));
+		myLine->GetPointIds()->SetId(0,ptsIds->GetId(0));
+		myLine->GetPointIds()->SetId(1,ptsIds->GetId(2));
+
+		output->InsertNextCell(myLine->GetCellType(),
+				       myLine->GetPointIds());
+
+		myLine->GetPointIds()->SetId(0,ptsIds->GetId(3));
+
+		output->InsertNextCell(myLine->GetCellType(),
+				       myLine->GetPointIds());
+
+		myLine->GetPointIds()->SetId(1,ptsIds->GetId(1));
 
 		output->InsertNextCell(myLine->GetCellType(),
 				       myLine->GetPointIds());
