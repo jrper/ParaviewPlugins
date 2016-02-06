@@ -1,5 +1,6 @@
 Source files for basic ParaView plugins.
 
+* AustraliaFilter : Flip round y-axis in data coondinates. Example filter from a presentation. 
 * ShowCVs : Show control volumes, i.e. show point data as cell data on a Voronoi dual data structure.
 * VelocitiesOnCVs :  Interpolate vector values onto the face centres of the control volume data structure.
 * GMSHreader : Pull the data from a gmsh file. Currently limited to simplicies, but only due to laziness in coding.
@@ -11,3 +12,4 @@ Source files for basic ParaView plugins.
 * MergePointsFilter:Map unstructured grids between continuous and discontinuous (also high and low order).
 * Supermesh: Use Fluidity femtools library to generate supermesh from a pair of unstructured meshes.
 * TemporalDataReaders: Get Fluidity style time data out of files and use for the time level.
+* Template : Do nothing copy filter. Use as a template for other code.
