@@ -221,7 +221,7 @@ int vtkMergePointFilter::RequestData(
     data->SetNumberOfComponents(input->GetPointData()->GetArray(i)->GetNumberOfComponents());
     data->SetNumberOfTuples(output->GetNumberOfPoints());
 
-    if (this->Continuity==0 && input->GetCell(0)->GetCellType() == output->GetCell(0)->GetCellType()) {
+    if (this->Continuity==0 && (input->GetCell(0) && output->GetCell(0)) && input->GetCell(0)->GetCellType() == output->GetCell(0)->GetCellType()) {
       data->DeepCopy(input->GetPointData()->GetArray(i));
     } else {
       for (int j=0; j<input->GetNumberOfCells();j++) {
