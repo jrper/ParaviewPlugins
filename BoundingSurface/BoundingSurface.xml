@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="vtkBoundingSurface" class="vtkBoundingSurface" label="BoundingSurface Filter">
+      <Documentation long_help="BoundingSurface Filter" short_help="Bounding Surface/Edge Filter">
+      </Documentation>
+      <InputProperty
+	  name="Input"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
