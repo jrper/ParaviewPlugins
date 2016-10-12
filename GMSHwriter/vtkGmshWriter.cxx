@@ -26,6 +26,22 @@
 vtkCxxRevisionMacro(vtkGmshWriter, "$Revision: 0.0$");
 vtkStandardNewMacro(vtkGmshWriter);
 
+int get_tag(vtkUnstructuredGrid* ugrid, int n)
+{
+
+  vtkCellData* cd = ugrid->GetCellData();
+  if (cd->HasArray("PhysicalIds")){
+
+    int id;
+    vtkIntArray* data = vtkIntArray::SafeDownCast(cd->GetArray("PhysicalIds"));
+    id = data->GetValue(n-1);
+
+    return id;
+  } else {
+    return n;
+  }
+}
+
 vtkGmshWriter::vtkGmshWriter(){
   this->FileName=NULL;
   this->isBinary=1;
@@ -101,11 +117,11 @@ void vtkGmshWriter::WriteData()
       GMSHfile.write(reinterpret_cast<char*>(&typeData),3*sizeof(int));
     }
     for(int j=0;j<typeData[1];j++) {
-      int eleMetaData[3]={n,n,n};
+      int eleMetaData[3]={n,n,get_tag(input,n)};
       if (this->isBinary==1) {
 	GMSHfile.write(reinterpret_cast<char*>(&eleMetaData),3*sizeof(int));
       } else {
-	GMSHfile <<n<<" "<<typeData[0]<<" "<<typeData[2]<<" "<<n<<" "<<n;
+	GMSHfile <<n<<" "<<typeData[0]<<" "<<typeData[2]<<" "<<n<<" "<<get_tag(input,n);
       }
       vtkIdType cellId=Ids->GetTuple1(j);
       for(int k=0;k<nodeCount[i];k++) {
