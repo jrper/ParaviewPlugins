@@ -1,0 +1,41 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="vtkConsistentInterpolation" class="vtkConsistentInterpolation" label="Consistent Interpolation Filter">
+      <Documentation long_help="ConsistentInterpolation Filter" short_help="Consistent Interpolation Filter">
+      </Documentation>
+      <InputProperty
+	  name="Geometry"
+	  port_index="1"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+      <InputProperty
+	  name="Data Source"
+	   port_index="0"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+      <DoubleVectorProperty
+          name="Interpolation tolerance"
+          command="SetRadius"
+          number_of_elements="1"
+          default_values="0.0">
+        <Documentation>
+          Set the tolerance of the near boundary interpolation.
+        </Documentation>
+      </DoubleVectorProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>

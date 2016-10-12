@@ -31,6 +31,7 @@ add_subdirectory(statreader)
 add_subdirectory(BoundingSurface)
 add_subdirectory(MergePointFilter)
 add_subdirectory(Supermesh)
+add_subdirectory(ConsistentInterpolation)
 add_subdirectory(Tests)
 
 
