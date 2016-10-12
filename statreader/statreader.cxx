@@ -106,7 +106,7 @@ int readStatData(std::ifstream& statFile,vtkTable* table) {
       statFile>>val;
       row->InsertNextValue ( vtkVariant ( val ) );
     }
-    table->InsertNextRow(row);
+    if (!statFile.eof()) { table->InsertNextRow(row); }
     }
   return 1;
 }
