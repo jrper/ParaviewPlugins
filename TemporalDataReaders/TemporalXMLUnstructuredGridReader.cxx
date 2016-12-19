@@ -11,7 +11,9 @@
 
 #include <iostream>
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(TemporalXMLUnstructuredGridReader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(TemporalXMLUnstructuredGridReader);
 
 TemporalXMLUnstructuredGridReader::TemporalXMLUnstructuredGridReader(){

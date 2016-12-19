@@ -21,7 +21,9 @@
 
 
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkMergePointFilter, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkMergePointFilter);
 
 int LinearType(int cellType) {

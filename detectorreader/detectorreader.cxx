@@ -39,9 +39,11 @@ struct columnData {
   std::string detector;
   std::string material_phase;
   int components;
-}
+};
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(detectorreader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(detectorreader);
 
 

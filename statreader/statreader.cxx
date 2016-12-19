@@ -19,7 +19,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-vtkCxxRevisionMacro(statreader, "$Revision: 0.0$");
+#if PARAVIEW_VERSION_MAJOR < 5
+vtkCxxRevisionMacro(statreader, "$Revision: 0.0$")
+#endif
 vtkStandardNewMacro(statreader);
 
 statreader::statreader(){

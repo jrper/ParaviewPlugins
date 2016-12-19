@@ -1,4 +1,5 @@
 #include "vtkXMLPPolyDataReader.h"
+#include "vtkPVConfig.h"
 
 class TemporalXMLPPolyDataReader : public vtkXMLPPolyDataReader
 {

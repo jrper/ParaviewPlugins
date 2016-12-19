@@ -1,11 +1,12 @@
 #include "vtkUnstructuredGridAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class vtkConsistentInterpolation : public vtkUnstructuredGridAlgorithm
 {
   
  public:
   static vtkConsistentInterpolation *New();
-  vtkTypeRevisionMacro(vtkConsistentInterpolation,vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkConsistentInterpolation,vtkUnstructuredGridAlgorithm);
 
   vtkGetMacro(Radius, double);
   vtkSetMacro(Radius, double);

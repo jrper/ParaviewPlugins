@@ -1,4 +1,5 @@
 #include "vtkXMLPUnstructuredGridReader.h"
+#include "vtkPVConfig.h"
 
 class TemporalXMLPUnstructuredGridReader : public vtkXMLPUnstructuredGridReader
 {

@@ -34,7 +34,9 @@
 
 
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.5$");
+#endif
 vtkStandardNewMacro(vtkShowCVs);
 
 double myAngle(double x[3]) {

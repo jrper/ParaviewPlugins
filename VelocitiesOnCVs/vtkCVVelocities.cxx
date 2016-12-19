@@ -20,7 +20,9 @@
 #include "vtkPolygon.h"
 #include "vtkHexahedron.h"
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkCVVelocities, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkCVVelocities);
 
 void InterpolatePoint(vtkCellData* opd,vtkPointData* ipd,vtkIdList* pointList,double* w) {

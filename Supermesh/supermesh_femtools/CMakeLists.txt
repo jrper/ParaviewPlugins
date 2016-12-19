@@ -32,7 +32,7 @@ exec_program ("python"
       set (NUMPY_INCLUDE_DIR ${NUMPY_INCLUDE_DIR} CACHE PATH "Numpy include path")
     endif (NUMPY_INCLUDE_DIR MATCHES "Traceback")
 
-include_directories(${PETSc_INCLUDE_DIR} ${PETSc_PACKAGE_INCLUDE_DIR}  ${PYTHON_INCLUDE_DIR} ${NUMPY_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/usr/include ${PETSc_INCLUDE_DIR} ${PETSc_PACKAGE_INCLUDE_DIR}  ${PYTHON_INCLUDE_DIR} ${NUMPY_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 FIND_PACKAGE(MPI REQUIRED)
 include (CMakeForceCompiler)

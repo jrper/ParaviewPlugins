@@ -1,4 +1,5 @@
 #include "vtkXMLPolyDataReader.h"
+#include "vtkPVConfig.h"
 
 class TemporalXMLPolyDataReader : public vtkXMLPolyDataReader
 {

@@ -26,7 +26,9 @@
 
 
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkSplitBcs, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkSplitBcs);
 
 vtkSplitBcs::vtkSplitBcs(){

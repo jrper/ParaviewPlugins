@@ -1,11 +1,12 @@
 #include "vtkUnstructuredGridAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class vtkBoundingSurface : public vtkUnstructuredGridAlgorithm
 {
   
  public:
   static vtkBoundingSurface *New();
-  vtkTypeRevisionMacro(vtkBoundingSurface,vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkBoundingSurface,vtkUnstructuredGridAlgorithm);
   
  protected:
 

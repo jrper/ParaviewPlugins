@@ -28,7 +28,9 @@
 
 
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkLinearSupermesh, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkLinearSupermesh);
 
 extern"C" {

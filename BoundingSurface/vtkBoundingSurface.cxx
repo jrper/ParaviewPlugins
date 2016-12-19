@@ -41,7 +41,9 @@ std::pair<vtkIdType,vtkIdType> sort(vtkCell* e) {
 
 
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkBoundingSurface, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkBoundingSurface);
 
 vtkBoundingSurface::vtkBoundingSurface(){

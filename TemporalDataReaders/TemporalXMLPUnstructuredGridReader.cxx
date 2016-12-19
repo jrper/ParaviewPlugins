@@ -1,4 +1,5 @@
 #include "TemporalXMLPUnstructuredGridReader.h"
+#include "vtkPVConfig.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -13,7 +14,9 @@
 
 #include <iostream>
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(TemporalXMLPUnstructuredGridReader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(TemporalXMLPUnstructuredGridReader);
 
 TemporalXMLPUnstructuredGridReader::TemporalXMLPUnstructuredGridReader(){

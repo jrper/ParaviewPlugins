@@ -1,11 +1,17 @@
 #include "vtkDataWriter.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkPVConfig.h"
 
 class vtkGmshWriter : public vtkDataWriter
 {
 public:
   static vtkGmshWriter *New();
+#if PARAVIEW_VERSION_MAJOR < 5
   vtkTypeRevisionMacro(vtkGmshWriter,vtkDataWriter);
+#else
+  vtkTypeMacro(vtkGmshWriter,vtkDataWriter);
+#endif
+
   vtkSetStringMacro(FileName);
   vtkGetStringMacro(FileName);
 

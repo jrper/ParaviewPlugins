@@ -1,10 +1,11 @@
 #include "vtkUnstructuredGridAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class vtkSupermesh : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkSupermesh *New();
-  vtkTypeRevisionMacro(vtkSupermesh,vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkSupermesh,vtkUnstructuredGridAlgorithm);
 
  protected:
 

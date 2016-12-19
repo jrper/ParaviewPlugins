@@ -4,7 +4,7 @@ class vtkLinearSupermesh : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkLinearSupermesh *New();
-  vtkTypeRevisionMacro(vtkLinearSupermesh,vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkLinearSupermesh,vtkUnstructuredGridAlgorithm);
   
   double Coefficients[2];
 

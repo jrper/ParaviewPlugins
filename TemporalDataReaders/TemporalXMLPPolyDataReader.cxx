@@ -13,7 +13,9 @@
 
 #include <iostream>
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(TemporalXMLPPolyDataReader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(TemporalXMLPPolyDataReader);
 
 TemporalXMLPPolyDataReader::TemporalXMLPPolyDataReader(){

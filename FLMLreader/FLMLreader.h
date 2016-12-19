@@ -1,4 +1,5 @@
 #include "vtkUnstructuredGridAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class FLMLreader : public vtkUnstructuredGridAlgorithm
 {

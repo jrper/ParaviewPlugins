@@ -1,4 +1,5 @@
 #include "vtkTableReader.h"
+#include "vtkPVConfig.h"
 
 class statreader : public vtkTableReader
 {

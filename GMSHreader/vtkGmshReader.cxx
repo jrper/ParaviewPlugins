@@ -31,7 +31,9 @@ void endswap(T *objp)
   std::reverse(memp, memp + sizeof(T));
 }
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkGmshReader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkGmshReader);
 
 vtkGmshReader::vtkGmshReader(){

@@ -1,4 +1,5 @@
 #include "vtkPolyDataAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class detectorreader : public vtkPolyDataAlgorithm
 {

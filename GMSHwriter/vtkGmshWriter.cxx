@@ -23,7 +23,9 @@
 #include <map>
 #include <algorithm>
 
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkGmshWriter, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkGmshWriter);
 
 int get_tag(vtkUnstructuredGrid* ugrid, int n)

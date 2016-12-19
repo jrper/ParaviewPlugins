@@ -20,8 +20,9 @@
 
 
 
-
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkConsistentInterpolation, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkConsistentInterpolation);
 
 vtkConsistentInterpolation::vtkConsistentInterpolation(){

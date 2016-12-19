@@ -38,8 +38,9 @@
 #include <sstream>
 #include <spud>
 
-
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(FLMLreader, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(FLMLreader);
 
 FLMLreader::FLMLreader(){
