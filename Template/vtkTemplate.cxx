@@ -11,11 +11,9 @@
 #include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 
-
-
-
-
+#if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkTemplate, "$Revision: 0.0$");
+#endif
 vtkStandardNewMacro(vtkTemplate);
 
 vtkTemplate::vtkTemplate(){

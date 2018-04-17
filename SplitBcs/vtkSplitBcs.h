@@ -1,11 +1,11 @@
 #include "vtkUnstructuredGridAlgorithm.h"
-#include "vtkPVConfig.h"
+#include "vtkVersion.h"
 
 class vtkSplitBcs : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkSplitBcs *New();
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 5
   vtkTypeRevisionMacro(vtkSplitBcs,vtkUnstructuredGridAlgorithm);
 #else
   vtkTypeMacro(vtkSplitBcs,vtkUnstructuredGridAlgorithm);

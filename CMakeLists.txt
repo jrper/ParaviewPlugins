@@ -1,3 +1,5 @@
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
+
 cmake_minimum_required(VERSION 2.8.8)
 
 if(COMMAND cmake_policy)
@@ -24,14 +26,15 @@ add_subdirectory(VelocitiesOnCVs)
 add_subdirectory(SplitBcs)
 add_subdirectory(GMSHreader)
 add_subdirectory(GMSHwriter)
-add_subdirectory(FLMLreader)
+#add_subdirectory(FLMLreader)
 add_subdirectory(TemporalDataReaders)
 add_subdirectory(detectorreader)
 add_subdirectory(statreader)
 add_subdirectory(BoundingSurface)
 add_subdirectory(MergePointFilter)
-add_subdirectory(Supermesh)
+#add_subdirectory(Supermesh)
 add_subdirectory(ConsistentInterpolation)
+add_subdirectory(SpatialTemporalInterpolation)
 add_subdirectory(Tests)
 
 

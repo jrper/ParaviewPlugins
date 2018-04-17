@@ -1,11 +1,12 @@
 #include "vtkUnstructuredGridAlgorithm.h"
+#include "vtkPVConfig.h"
 
 class vtkTemplate : public vtkUnstructuredGridAlgorithm
 {
   
  public:
   static vtkTemplate *New();
-  vtkTypeRevisionMacro(vtkTemplate,vtkUnstructuredGridAlgorithm);
+  vtkTypeMacro(vtkTemplate,vtkUnstructuredGridAlgorithm);
   
  protected:
 

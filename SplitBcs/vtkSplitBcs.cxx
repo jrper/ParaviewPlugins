@@ -25,9 +25,10 @@
 #include <set>
 
 
-
+#ifdef PARAVIEW_VERSION
 #if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(vtkSplitBcs, "$Revision: 0.0$");
+#endif
 #endif
 vtkStandardNewMacro(vtkSplitBcs);
 

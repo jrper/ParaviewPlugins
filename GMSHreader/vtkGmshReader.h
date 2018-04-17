@@ -1,12 +1,12 @@
 #include "vtkUnstructuredGridAlgorithm.h"
 #include "vtkSetGet.h"
-#include "vtkPVConfig.h"
+#include "vtkVersion.h"
 
 class vtkGmshReader : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkGmshReader* New();
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 6
   vtkTypeRevisionMacro(vtkGmshReader,vtkUnstructuredGridAlgorithm);
 #else
   vtkTypeMacro(vtkGmshReader,vtkUnstructuredGridAlgorithm);

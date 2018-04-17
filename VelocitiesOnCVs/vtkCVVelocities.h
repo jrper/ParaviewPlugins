@@ -1,12 +1,12 @@
 #include "vtkUnstructuredGridAlgorithm.h"
 #include "vtkSetGet.h"
-#include "vtkPVConfig.h"
+#include "vtkVersion.h"
 
 class vtkCVVelocities : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkCVVelocities* New();
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 6
   vtkTypeRevisionMacro(vtkCVVelocities,vtkUnstructuredGridAlgorithm);
 #else
   vtkTypeMacro(vtkCVVelocities,vtkUnstructuredGridAlgorithm);

@@ -27,12 +27,19 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 set(vtk_libs
-    vtkCommon
-    vtkFiltering
-    vtkIO
-    vtkGraphics)
+    vtkCommonExecutionModel
+    vtkCommonCore
+    vtkFiltersCore
+    vtkParallelCore
+    vtkIOLegacy
+    vtkIOParallel
+    vtkImagingCore
+    vtkFiltersGeometry)
+#    vtkFiltering
+#    vtkIO
+#    vtkGraphics)
 
-set(VTK_MODULES_USED vtkCommon vtkFiltering vtkIO vtkGraphics)
+#set(VTK_MODULES_USED vtkCommon vtkFiltering vtkIO vtkGraphics)
 
 link_directories(${VTK_DIR})
 include_directories("${PYTHON_INCLUDE_DIRS}")
@@ -41,26 +48,32 @@ add_library(vtkPlugins SHARED ${FILE_SRCS})
 target_link_libraries(vtkPlugins ${vtk_libs})
 
 # Generate wrapper code
-vtk_wrap_python3(vtkPluginsPython vtkPluginsPython_SRCS "${FILE_SRCS}")
+vtk_wrap_python3(vtkPluginsPython KitPython_SRCS "${FILE_SRCS}")
     
-add_library(vtkPluginsPythonD ${vtkPluginsPython_SRCS})
-target_link_libraries(vtkPluginsPythonD  vtkPlugins)   
+add_library(vtkPluginsPythonD ${KitPython_SRCS} ${Kit_PYTHON_EXTRA_SRCS})
+target_link_libraries(vtkPluginsPythonD  vtkPlugins ${KIT_PYTHON_LIBS})   
+
+IF(KIT_PYTHON_DEPS)
+  ADD_DEPENDENCIES(vtkPluginsPythonD ${KIT_PYTHON_DEPS} ${VTK_PYTHON_LIBRARIES})
+ENDIF(KIT_PYTHON_DEPS)
+
+python_add_module(vtkPluginsPython vtkPluginsPythonInit.cxx)
     
 #target_link_libraries(vtkPluginsPythonD         
 #    ${VTK_LIBRARIES}
 #    vtkPythonCore 
 #    ${VTK_PYTHON_LIBRARIES} ${PYTHON_LIBRARY})
     
-add_library(vtkPlugins/vtkPluginsPython MODULE ${vtkPluginsPython_SRCS} vtkPluginsPythonInit.cxx)
+#add_library(vtkPlugins/vtkPluginsPython MODULE ${vtkPluginsPython_SRCS} vtkPluginsPythonInit.cxx)
     
 set(VTK_PYTHOND_LIBS)
-foreach(TMP_LIB ${VTK_MODULES_USED})
-     set(VTK_PYTHOND_LIBS ${VTK_PYTHOND_LIBS} ${TMP_LIB}PythonD)
+foreach(TMP_LIB ${vtk_libs})
+     set(VTK_PYTHOND_LIBS ${VTK_PYTHOND_LIBS} /opt/local/lib/lib${TMP_LIB}Python27D-7.1.dylib)
 endforeach()    
     
-target_link_libraries(vtkPlugins/vtkPluginsPython vtkPluginsPythonD ${VTK_PYTHOND_LIBS})
+target_link_libraries(vtkPluginsPython ${PYTHON_LIBRARIES} /opt/local/lib/libvtkWrappingPython27Core-7.1.dylib vtkPluginsPythonD ${VTK_PYTHOND_LIBS})
 
-set_target_properties(vtkPlugins/vtkPluginsPython PROPERTIES PREFIX "")
+#set_target_properties(vtkPlugins/vtkPluginsPython PROPERTIES PREFIX "")
 
 
 set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")	

@@ -4,13 +4,13 @@
 #include "vtkPoints.h"
 #include "vtkDataArray.h"
 #include "vtkIdList.h"
-#include "vtkPVConfig.h"
+#include "vtkVersion.h"
 
 class vtkMergePointFilter : public vtkUnstructuredGridAlgorithm
 {
 public:
   static vtkMergePointFilter *New();
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 6
   vtkTypeRevisionMacro(vtkMergePointFilter,vtkUnstructuredGridAlgorithm);
 #else
   vtkTypeMacro(vtkMergePointFilter,vtkUnstructuredGridAlgorithm);

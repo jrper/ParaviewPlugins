@@ -23,7 +23,7 @@
 #include <map>
 #include <algorithm>
 
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 6
 vtkCxxRevisionMacro(vtkGmshWriter, "$Revision: 0.0$");
 #endif
 vtkStandardNewMacro(vtkGmshWriter);

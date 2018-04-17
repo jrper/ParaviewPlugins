@@ -34,7 +34,7 @@
 
 
 
-#if PARAVIEW_VERSION_MAJOR < 5
+#if VTK_MAJOR_VERSION < 6
 vtkCxxRevisionMacro(vtkShowCVs, "$Revision: 0.5$");
 #endif
 vtkStandardNewMacro(vtkShowCVs);

@@ -108,7 +108,7 @@ int vtkConsistentInterpolation::RequestData(
 	    break;
 	  }
       }
-    }else {
+  } else {
       int N = cell->GetNumberOfPoints();
       for (vtkIdType j=0;j<source->GetPointData()->GetNumberOfArrays();++j) {
 	vtkDataArray* data =source->GetPointData()->GetArray(j);

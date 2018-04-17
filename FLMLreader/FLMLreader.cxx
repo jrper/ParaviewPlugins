@@ -36,7 +36,6 @@
 #include <cstdlib>
 
 #include <sstream>
-#include <spud>
 
 #if PARAVIEW_VERSION_MAJOR < 5
 vtkCxxRevisionMacro(FLMLreader, "$Revision: 0.0$");
@@ -63,11 +62,13 @@ vtkInformation* outInfo1=outputVector->GetInformationObject(1);
 vtkMultiBlockDataSet* output1= vtkMultiBlockDataSet::SafeDownCast(outInfo1->Get(vtkDataObject::DATA_OBJECT() ) );
  outInfo1->Set(vtkMultiBlockDataSet::FIELD_NAME(),"Boundary");
 
+ char buffer[8192];
+
 this->DebugOn();
 
   // try to open the FLML file
 
-Spud::load_options(this->FileName);
+ spud::load_options(this->FileName);
 
 // get the filename of a mesh
 
@@ -75,12 +76,12 @@ Spud::load_options(this->FileName);
 std::string fname;
 std::string lhs ("/geometry/mesh[");
 std::string rhs ("]/from_file");
-for (int i=0;i<Spud::option_count("/geometry/mesh");i++){
+ for (int i=0;i<spud::option_count(lhs);i++){
 std::stringstream a;
 a<<i;
 std::string key=lhs+a.str()+rhs;    
-if ( Spud::have_option(key)) {
-Spud::get_option(key+"/file_name",fname);
+ if ( spud::have_option(key)) {
+   spud::get_option(key+"/file_name", fname); 
 break;
 }
 }
@@ -141,33 +142,33 @@ gr->Update();
 
  lhs="/material_phase[";
  rhs="]/";
- for (int i=0;i<Spud::option_count("/material_phase");i++){
+ for (int i=0;i<spud_option_count("/material_phase", 15);i++){
    std::stringstream a;
    a<<i;
    std::string key=lhs+a.str()+rhs;
    std::string state_name;
-   Spud::get_option(key+"name",state_name);
-   for (int j=0;j<Spud::option_count(key+"scalar_field");j++){
+   spud::get_option(key+"name", state_name);
+   for (int j=0;j<spud::option_count(key+"scalar_field");j++){
      vtkSmartPointer<vtkDoubleArray> scalar_field= vtkSmartPointer<vtkDoubleArray>::New();
     scalar_field->SetNumberOfComponents(1);
     std::stringstream b;
     b<<j;
     std::string key2=key+"scalar_field["+b.str()+rhs;
     std::string field_name;
-    Spud::get_option(key2+"name",field_name);
+    spud::get_option(key2+"name", field_name);
     vtkDebugMacro(<<i<<" "<<j<<" "<<key2.c_str());
 
     std::map<int,double> id2bc;
     
-    for (int k=0;k<Spud::option_count(key2+"prognostic/boundary_conditions");k++){
+    for (int k=0;k<spud::option_count(key2+"prognostic/boundary_conditions");k++){
       std::stringstream c;
       c<<k;
       std::string key3=key2+"prognostic/boundary_conditions["+c.str()+"]/surface_ids";
       std::vector<int> surface_ids;
-      Spud::get_option(key3,surface_ids);
+      spud::get_option(key3, surface_ids);
       std::string key4=key2+"prognostic/boundary_conditions["+c.str()+"]/type::dirichlet/constant";
       double val;
-      Spud::get_option(key4,val);
+      spud::get_option(key4, val);
       for (std::vector<int>::iterator it = surface_ids.begin(); it!=surface_ids.end(); ++it){
 	id2bc.insert(std::pair<int,double>(*it,val));
       }
@@ -207,20 +208,20 @@ gr->Update();
 
        vtkDebugMacro(<<"Vector fields")
 
-  for (int j=0;j<Spud::option_count(key+"vector_field");j++){
+	 for (int j=0;j<spud::option_count(key+"vector_field");j++){
     vtkSmartPointer<vtkDoubleArray> vector_field= vtkSmartPointer<vtkDoubleArray>::New();
     std::stringstream b;
     b<<j;
     std::string key2=key+"vector_field["+b.str()+rhs;
     std::string field_name;
-    Spud::get_option(key2+"name",field_name);
+    spud::get_option(key2+"name", field_name);
     vector_field->SetName((state_name+"::"+field_name).c_str());
     vector_field->SetNumberOfComponents(3);
     vector_field->Allocate(output0->GetNumberOfPoints());
     vtkDebugMacro(<<output0->GetNumberOfPoints());
     output0->GetPointData()->AddArray(vector_field);
     std::vector<double> val;
-    Spud::get_option(key2+"prognostic/initial_condition/constant",val);
+    spud::get_option(key2+"prognostic/initial_condition/constant", val);
     for (int n=0;n<output0->GetNumberOfPoints();++n){
       vector_field->InsertTuple3(n,val[0],val[1],val[2]);
     }
@@ -228,13 +229,13 @@ gr->Update();
        
        vtkDebugMacro(<<"Tensor fields")
 
-  for (int j=0;j<Spud::option_count(key+"tensor_field");j++){
+  for (int j=0;j<spud::option_count(key+"tensor_field");j++){
     vtkSmartPointer<vtkDoubleArray> tensor_field= vtkSmartPointer<vtkDoubleArray>::New();
     std::stringstream b;
     b<<j;
     std::string key2=key+"tensor_field["+b.str()+rhs;
     std::string field_name;
-    Spud::get_option(key2+"name",field_name);
+    spud::get_option(key2+"name",field_name);
     tensor_field->SetName((state_name+"::"+field_name).c_str());
     tensor_field->SetNumberOfComponents(9);
     tensor_field->Allocate(output0->GetNumberOfPoints());
