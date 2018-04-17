@@ -1,0 +1,19 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="filters">
+    <SourceProxy name="vtkSpatialTemporalInterpolation" class="vtkSpatialTemporalInterpolation" label="Spatial-Temporal Interpolation Filter">
+      <Documentation long_help="Spatial Temporal Interpolation Filter" short_help="Spatial Temporal Interpolation Filter">
+      </Documentation>
+      <InputProperty
+	  name="Input"
+	  command="SetInputConnection">
+	<ProxyGroupDomain name="groups">
+	  <Group name="sources"/>
+	  <Group name="filters"/>
+	</ProxyGroupDomain>
+	<DataTypeDomain name="input_type">
+	  <DataType value="vtkUnstructuredGrid"/>
+	</DataTypeDomain>
+      </InputProperty>
+    </SourceProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
