@@ -17,3 +17,5 @@ ADD_PARAVIEW_PLUGIN(
   )
 
 TARGET_LINK_LIBRARIES(showCVs ${CMAKE_CURRENT_SOURCE_DIR}/../MergePointFilter/libMergePointFilter${CMAKE_SHARED_LIBRARY_SUFFIX} )
+
+add_dependencies (showCVs MergePointFilter)

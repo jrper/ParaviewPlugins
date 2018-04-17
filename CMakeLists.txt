@@ -10,6 +10,16 @@ PROJECT(ParaviewPlugins)
 
 set(CMAKE_MACOSX_RPATH 1)
 
+# use, i.e. don't skip the full RPATH for the build tree
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+SET(CMAKE_INSTALL_RPATH "\$ORIGIN/")
+
+
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
 link_directories(${ParaView_LIB_DIR})
@@ -41,9 +51,6 @@ add_subdirectory(Tests)
 
 add_custom_target(plugins DEPENDS ShowCVs VelocitiesOnCVs SplitBcs GMSHreader GMSHwriter FLMLreader TemporalDataReaders detectorreader statreader)
 
-file(GLOB TARGETS */*.dylib)
-
-file(COPY ${TARGETS} DESTINATION plugins)
-
-
-
+add_custom_command(TARGET plugins POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy */*${CMAKE_SHARED_LIBRARY_SUFFIX} plugins
+)
