@@ -8,28 +8,32 @@ endif(COMMAND cmake_policy)
 
 PROJECT(ParaviewPlugins)
 
-set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_MACOSX_RPATH TRUE)
 
 # use, i.e. don't skip the full RPATH for the build tree
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
-# when building, don't use the install RPATH already
-# (but later on when installing)
+# when building, use the install RPATH 
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
 
-SET(CMAKE_INSTALL_RPATH "\$ORIGIN/")
-
+if (UNIX)
+  if (APPLE)
+    SET(CMAKE_INSTALL_RPATH "@loader_path/")
+  elseif (APPLE)
+    SET(CMAKE_INSTALL_RPATH "\$ORIGIN/")
+  endif (APPLE)
+endif (UNIX)
 
 FIND_PACKAGE(ParaView REQUIRED)
 INCLUDE(${PARAVIEW_USE_FILE})
 link_directories(${ParaView_LIB_DIR})
 
-
 FIND_PACKAGE( PkgConfig REQUIRED)
 pkg_search_module(CPPUNIT cppunit)
 include_directories(${ParaView_INCLUDE_DIRS} ${CPPUNIT_INCLUDE_DIRS})
 
-file(MAKE_DIRECTORY plugins)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/plugins)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/plugins)
 
 add_subdirectory(ShowCVs)
 add_subdirectory(VelocitiesOnCVs)
@@ -48,9 +52,3 @@ add_subdirectory(SpatialTemporalInterpolation)
 add_subdirectory(Tests)
 
 
-
-add_custom_target(plugins DEPENDS ShowCVs VelocitiesOnCVs SplitBcs GMSHreader GMSHwriter FLMLreader TemporalDataReaders detectorreader statreader)
-
-add_custom_command(TARGET plugins POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy */*${CMAKE_SHARED_LIBRARY_SUFFIX} plugins
-)

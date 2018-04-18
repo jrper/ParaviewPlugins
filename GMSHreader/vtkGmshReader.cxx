@@ -270,7 +270,7 @@ int vtkGmshReader::RequestData(
   ifstream GMSHfile;
   GMSHfile.open(this->FileName);
 
-#ifndef NDEBUG.
+#ifndef NDEBUG
   this->DebugOn();
 #endif
 
